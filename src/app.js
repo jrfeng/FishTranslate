@@ -41,6 +41,7 @@ import './components/ft-balance-dialog.js'
 import './components/ft-model-picker.js'
 import './components/ft-theme-picker.js'
 import './components/ft-more-menu.js'
+import './components/ft-icon-menu.js'
 
 const MAX_TERMS = 50
 const COPIED_MS = 1600
@@ -2528,6 +2529,23 @@ function bind() {
     button.addEventListener('click', hideToolbarTip)
   }
 
+  el['model-menu'].addEventListener('select', (event) => {
+    closeIconMenu()
+    state.selectedModel = event.detail
+    config.model = event.detail
+    saveSettings()
+    // 宽屏用的是下拉框，切窄窗口后它仍然存在，必须一起同步
+    renderModels()
+    renderChrome()
+  })
+
+  el['theme-menu'].addEventListener('select', (event) => {
+    closeIconMenu()
+    applyTheme(event.detail)
+    writeStore(KEYS.theme, state.theme)
+    renderChrome()
+  })
+
   document.addEventListener('click', (event) => {
     if (state.openIconMenu === null) return
     const menu = el[state.openIconMenu + '-menu']
@@ -3107,8 +3125,8 @@ function themeMenuItems() {
 function closeIconMenu() {
   if (state.openIconMenu === null) return
   state.openIconMenu = null
-  el['model-menu'].hidden = true
-  el['theme-menu'].hidden = true
+  el['model-menu'].open = false
+  el['theme-menu'].open = false
   el['model-icon-btn'].classList.remove('is-open')
   el['theme-icon-btn'].classList.remove('is-open')
   el['model-icon-btn'].setAttribute('aria-expanded', 'false')
@@ -3120,49 +3138,11 @@ function openIconMenu(kind) {
   state.openIconMenu = kind
   const menu = el[kind + '-menu']
   const button = el[kind + '-icon-btn']
-  const items = kind === 'model' ? modelMenuItems() : themeMenuItems()
-  const current = kind === 'model' ? state.selectedModel || config.model : state.theme
-
-  menu.replaceChildren()
-  for (const item of items) {
-    const row = document.createElement('div')
-    row.className = 'icon-menu-item' + (item.id === current ? ' is-current' : '')
-    row.setAttribute('role', 'menuitem')
-    const tick = document.createElement('span')
-    tick.className = 'tick'
-    if (item.id === current) {
-      tick.innerHTML =
-        '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.4 4.8 9 10 3.2" /></svg>'
-    }
-    const label = document.createElement('span')
-    label.textContent = item.label
-    row.append(tick, label)
-    row.addEventListener('click', () => {
-      closeIconMenu()
-      if (kind === 'model') {
-        state.selectedModel = item.id
-        config.model = item.id
-        saveSettings()
-        // 宽屏用的是下拉框，切窄窗口后它仍然存在，必须一起同步
-        renderModels()
-        renderChrome()
-      } else {
-        applyTheme(item.id)
-        writeStore(KEYS.theme, state.theme)
-        renderChrome()
-      }
-    })
-    menu.appendChild(row)
-  }
-
-  menu.hidden = false
-  menu.classList.remove('is-right')
+  menu.items = kind === 'model' ? modelMenuItems() : themeMenuItems()
+  menu.current = kind === 'model' ? currentModelId() : state.theme
+  menu.open = true
   button.classList.add('is-open')
   button.setAttribute('aria-expanded', 'true')
-
-  // 靠近窗口右边时改成右对齐，避免菜单出界
-  const rect = menu.getBoundingClientRect()
-  if (rect.right > window.innerWidth - 8) menu.classList.add('is-right')
 }
 
 function toggleIconMenu(kind) {
