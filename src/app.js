@@ -42,6 +42,7 @@ import './components/ft-model-picker.js'
 import './components/ft-theme-picker.js'
 import './components/ft-more-menu.js'
 import './components/ft-icon-menu.js'
+import './components/ft-toolbar.js'
 
 const MAX_TERMS = 50
 const COPIED_MS = 1600
@@ -201,14 +202,11 @@ const state = {
 
 const el = {}
 for (const id of [
-  'settings-toggle',
-  'settings-icon-btn',
-  'more-btn',
+  'toolbar',
   'mobile-image',
   'mobile-terms',
   'mobile-terms-label',
   'mobile-translate',
-  'more-menu',
   'model-picker',
   'theme-picker',
   'balance-dialog',
@@ -218,13 +216,6 @@ for (const id of [
   'balance-wrap',
   'balance-progress',
   'balance-divider',
-  'theme-select',
-  'model-icon-btn',
-  'model-menu',
-  'theme-icon-btn',
-  'theme-menu',
-  'source-lang',
-  'target-lang',
   'pick-image',
   'image-input',
   'ocr-progress',
@@ -838,7 +829,9 @@ function renderChrome() {  const loading = state.phase === 'loading'
   el['image-refresh'].dataset.tip = '重新识别'
 
   el.settings.hidden = !state.settingsOpen
-  el['settings-toggle'].setAttribute('aria-expanded', String(state.settingsOpen))
+  if (el['toolbar'] !== null && el['toolbar'] !== undefined) {
+    el['toolbar'].settingsOpen = state.settingsOpen
+  }
 
   const narrow = window.matchMedia('(max-width: 768px)').matches
   el['terms-label'].textContent = '术语 ' + state.terms.length + ' 条'
@@ -1081,46 +1074,8 @@ function renderTerms() {
 }
 
 /** 给 wa-select 补一个下箭头（Web Awesome 自带的 wa-icon 没有注册，默认不可见） */
-function ensureSelectChevron(select) {
-  if (select === null || select === undefined) return
-  if (select.querySelector('[slot="expand-icon"]') !== null) return
-  const ns = 'http://www.w3.org/2000/svg'
-  const svg = document.createElementNS(ns, 'svg')
-  svg.setAttribute('slot', 'expand-icon')
-  svg.setAttribute('class', 'select-chevron')
-  svg.setAttribute('viewBox', '0 0 12 12')
-  svg.setAttribute('width', '10')
-  svg.setAttribute('height', '10')
-  svg.setAttribute('aria-hidden', 'true')
-  const path = document.createElementNS(ns, 'path')
-  path.setAttribute('d', 'M2.5 4.4 6 7.9l3.5-3.5')
-  path.setAttribute('fill', 'none')
-  path.setAttribute('stroke', 'currentColor')
-  path.setAttribute('stroke-width', '1.6')
-  path.setAttribute('stroke-linecap', 'round')
-  path.setAttribute('stroke-linejoin', 'round')
-  svg.appendChild(path)
-  select.appendChild(svg)
-}
-
 function renderModels() {
-  const select = el['model-select']
-  select.replaceChildren()
-
-  const list = state.models.length > 0 ? state.models : [{ id: config.model || DEFAULT_MODEL }]
-  for (const item of list) {
-    const option = document.createElement('wa-option')
-    option.value = item.id
-    option.textContent = item.id
-    select.appendChild(option)
-  }
-
-  const wanted = state.selectedModel || config.model
-  const exists = list.some((item) => item.id === wanted)
-  const next = exists ? wanted : list[0].id
-  select.value = next
-  state.selectedModel = next
-  ensureSelectChevron(select)
+  syncToolbar()
 }
 
 function render() {
@@ -2279,27 +2234,10 @@ function bind() {
     )
   }
 
-  el['more-btn'].addEventListener('click', (event) => {
-    event.stopPropagation()
-    state.moreMenuOpen = !state.moreMenuOpen
-    renderChrome()
-  })
-
-  el['more-menu'].addEventListener('select', (event) => {
-    state.moreMenuOpen = false
-    const key = event.detail
-    if (key === 'model') openModelPicker()
-    else if (key === 'theme') openThemePicker()
-    else if (key === 'settings') state.settingsOpen = true
-    else openBalanceModal()
-    renderChrome()
-  })
-
   // 点外部关闭「更多」菜单
   document.addEventListener('mousedown', (event) => {
     if (!state.moreMenuOpen) return
-    if (el['more-menu'].contains(event.target)) return
-    if (el['more-btn'].contains(event.target)) return
+    if (el['toolbar'].contains(event.target)) return
     state.moreMenuOpen = false
     renderChrome()
   })
@@ -2437,11 +2375,6 @@ function bind() {
   el['term-add-icon'].addEventListener('click', addTerm)
   el['term-add-foot'].addEventListener('click', addTerm)
 
-  el['settings-toggle'].addEventListener('click', () => {
-    state.settingsOpen = !state.settingsOpen
-    renderChrome()
-  })
-
   el['settings-x'].addEventListener('click', () => {
     state.settingsOpen = false
     renderChrome()
@@ -2475,44 +2408,81 @@ function bind() {
 
   el['balance'].addEventListener('click', () => void refreshBalance(true))
 
-  el['theme-select'].addEventListener('change', () => {
-    applyTheme(el['theme-select'].value)
-    writeStore(KEYS.theme, state.theme)
-  })
-
-  el['source-lang'].addEventListener('change', () => {
-    state.sourceLang = el['source-lang'].value
-    writeStore(KEYS.sourceLang, state.sourceLang)
-    renderChrome()
-  })
-
-  el['target-lang'].addEventListener('change', () => {
-    state.targetLang = el['target-lang'].value
-    writeStore(KEYS.targetLang, state.targetLang)
-    renderChrome()
-  })
-
   bindWindowControls()
 
-  el['settings-icon-btn'].addEventListener('click', () => {
+  el['toolbar'].addEventListener('settings', () => {
     state.settingsOpen = true
     renderChrome()
   })
 
-  el['model-icon-btn'].addEventListener('click', (event) => {
-    event.stopPropagation()
-    toggleIconMenu('model')
+  el['toolbar'].addEventListener('menu-toggle', (event) => {
+    toggleIconMenu(event.detail.menu)
   })
 
-  el['theme-icon-btn'].addEventListener('click', (event) => {
-    event.stopPropagation()
-    toggleIconMenu('theme')
+  el['toolbar'].addEventListener('more-toggle', () => {
+    state.moreMenuOpen = !state.moreMenuOpen
+    renderChrome()
   })
+
+  el['toolbar'].addEventListener('select-change', (event) => {
+    const { field, value } = event.detail
+    if (field === 'source') {
+      state.sourceLang = value
+      writeStore(KEYS.sourceLang, value)
+      renderChrome()
+    } else if (field === 'target') {
+      state.targetLang = value
+      writeStore(KEYS.targetLang, value)
+      renderChrome()
+    } else if (field === 'model') {
+      state.selectedModel = value
+      config.model = value
+      saveSettings()
+      renderChrome()
+    } else if (field === 'theme') {
+      applyTheme(value)
+      writeStore(KEYS.theme, state.theme)
+    }
+  })
+
+  el['toolbar'].addEventListener('menu-select', (event) => {
+    const { menu, value } = event.detail
+    closeIconMenu()
+    if (menu === 'model') {
+      state.selectedModel = value
+      config.model = value
+      saveSettings()
+      renderModels()
+      renderChrome()
+    } else {
+      applyTheme(value)
+      writeStore(KEYS.theme, state.theme)
+      renderChrome()
+    }
+  })
+
+  el['toolbar'].addEventListener('more-select', (event) => {
+    state.moreMenuOpen = false
+    const key = event.detail
+    if (key === 'model') openModelPicker()
+    else if (key === 'theme') openThemePicker()
+    else if (key === 'settings') state.settingsOpen = true
+    else openBalanceModal()
+    renderChrome()
+  })
+
+  // 工具栏图标按钮的 hover 提示（组件里设置了 data-tip）
+  el['toolbar'].addEventListener('mouseover', (event) => {
+    const button = event.target instanceof Element ? event.target.closest('.icon-btn[data-tip]') : null
+    if (button !== null) showToolbarTip(button)
+  })
+  el['toolbar'].addEventListener('mouseout', (event) => {
+    const button = event.target instanceof Element ? event.target.closest('.icon-btn[data-tip]') : null
+    if (button !== null) hideToolbarTip()
+  })
+  el['toolbar'].addEventListener('click', hideToolbarTip)
 
   const tipButtons = [
-    el['model-icon-btn'],
-    el['theme-icon-btn'],
-    el['settings-icon-btn'],
     el['terms-icon'],
     el['immediate-icon'],
     el['clear-icon'],
@@ -2529,27 +2499,9 @@ function bind() {
     button.addEventListener('click', hideToolbarTip)
   }
 
-  el['model-menu'].addEventListener('select', (event) => {
-    closeIconMenu()
-    state.selectedModel = event.detail
-    config.model = event.detail
-    saveSettings()
-    // 宽屏用的是下拉框，切窄窗口后它仍然存在，必须一起同步
-    renderModels()
-    renderChrome()
-  })
-
-  el['theme-menu'].addEventListener('select', (event) => {
-    closeIconMenu()
-    applyTheme(event.detail)
-    writeStore(KEYS.theme, state.theme)
-    renderChrome()
-  })
-
   document.addEventListener('click', (event) => {
     if (state.openIconMenu === null) return
-    const menu = el[state.openIconMenu + '-menu']
-    if (menu.contains(event.target)) return
+    if (el['toolbar'].inMenu(event.target)) return
     closeIconMenu()
   })
 
@@ -2562,12 +2514,6 @@ function bind() {
     closeIconMenu()
   })
 
-  el['model-select'].addEventListener('change', () => {
-    state.selectedModel = el['model-select'].value
-    config.model = state.selectedModel
-    saveSettings()
-    renderChrome()
-  })
 }
 
 /* ------------------------------------------------------------ 图片识别 */
@@ -2962,16 +2908,7 @@ DARK_QUERY.addEventListener('change', () => {
 })
 
 function renderThemeSelect() {
-  const select = el['theme-select']
-  select.replaceChildren()
-  for (const theme of THEMES) {
-    const option = document.createElement('wa-option')
-    option.value = theme.id
-    option.textContent = theme.name
-    select.appendChild(option)
-  }
-  select.value = state.theme
-  ensureSelectChevron(select)
+  syncToolbar()
 }
 
 /* ------------------------------------------------- 窄窗口图标按钮（模型 / 主题） */
@@ -2987,6 +2924,12 @@ const THEME_ICONS = {
   c: '<rect x="2.6" y="2.6" width="10.8" height="10.8" /><path class="icon-fill" d="M13.4 2.6v10.8H2.6z" />',
   // 蓝色大肥鱼：半填充 + 圆
   d: '<circle cx="8" cy="8" r="5.6" /><path class="icon-fill" d="M8 2.4a5.6 5.6 0 0 1 0 11.2z" />',
+}
+
+/** 主题 id → 显示名（跟随系统 / 浅色 / 深色 …） */
+function themeName(id) {
+  const found = THEMES.find((item) => item.id === id)
+  return found === undefined ? THEMES[0].name : found.name
 }
 
 function currentModelId() {
@@ -3065,14 +3008,6 @@ function syncMoreUi() {
     themePicker.value = state.pendingTheme
     if (state.themePickerOpen) themePicker.items = THEMES
   }
-  const moreMenu = el['more-menu']
-  if (moreMenu !== null && moreMenu !== undefined) {
-    moreMenu.items = moreMenuItems()
-    moreMenu.open = state.moreMenuOpen
-  }
-  el['more-btn'].classList.toggle('is-open', state.moreMenuOpen)
-  el['more-btn'].setAttribute('aria-expanded', String(state.moreMenuOpen))
-
   const balanceDialog = el['balance-dialog']
   if (balanceDialog !== null && balanceDialog !== undefined) {
     balanceDialog.open = state.balanceOpen
@@ -3092,25 +3027,7 @@ function currentThemeIcon() {
 }
 
 function syncIconButtons() {
-  const themeButton = el['theme-icon-btn']
-  if (themeButton !== null && themeButton !== undefined) {
-    const svg = themeButton.querySelector('svg')
-    if (svg !== null) svg.innerHTML = currentThemeIcon()
-    themeButton.dataset.tip = '主题：' + themeName(state.theme)
-  }
-  const settingsButton = el['settings-icon-btn']
-  if (settingsButton !== null && settingsButton !== undefined) {
-    settingsButton.dataset.tip = '设置'
-  }
-  const modelButton = el['model-icon-btn']
-  if (modelButton !== null && modelButton !== undefined) {
-    modelButton.dataset.tip = '模型：' + (state.selectedModel || config.model || DEFAULT_MODEL)
-  }
-}
-
-function themeName(id) {
-  const found = THEMES.find((item) => item.id === id)
-  return found === undefined ? '跟随系统' : found.name
+  syncToolbar()
 }
 
 function modelMenuItems() {
@@ -3122,27 +3039,44 @@ function themeMenuItems() {
   return THEMES.map((item) => ({ id: item.id, label: item.name }))
 }
 
+/** 把状态推给工具栏组件（语言 / 模型 / 主题 / 菜单 / 提示） */
+function syncToolbar() {
+  const toolbar = el['toolbar']
+  if (toolbar === null || toolbar === undefined) return
+  toolbar.languages = LANGS
+  toolbar.source = state.sourceLang
+  toolbar.target = state.targetLang
+  toolbar.models = state.models.length > 0 ? state.models : [{ id: currentModelId() }]
+  toolbar.model = currentModelId()
+  toolbar.themes = THEMES
+  toolbar.theme = state.theme
+  toolbar.settingsOpen = state.settingsOpen
+  toolbar.moreOpen = state.moreMenuOpen
+  toolbar.moreItems = moreMenuItems()
+  toolbar.modelMenuOpen = state.openIconMenu === 'model'
+  toolbar.modelMenuItems = modelMenuItems()
+  toolbar.modelMenuCurrent = currentModelId()
+  toolbar.themeMenuOpen = state.openIconMenu === 'theme'
+  toolbar.themeMenuItems = themeMenuItems()
+  toolbar.themeMenuCurrent = state.theme
+  toolbar.tips = {
+    model: '模型：' + currentModelId(),
+    theme: '主题：' + themeName(state.theme),
+    themeIcon: currentThemeIcon(),
+    settings: '设置',
+  }
+}
+
 function closeIconMenu() {
   if (state.openIconMenu === null) return
   state.openIconMenu = null
-  el['model-menu'].open = false
-  el['theme-menu'].open = false
-  el['model-icon-btn'].classList.remove('is-open')
-  el['theme-icon-btn'].classList.remove('is-open')
-  el['model-icon-btn'].setAttribute('aria-expanded', 'false')
-  el['theme-icon-btn'].setAttribute('aria-expanded', 'false')
+  syncToolbar()
 }
 
 function openIconMenu(kind) {
   closeIconMenu()
   state.openIconMenu = kind
-  const menu = el[kind + '-menu']
-  const button = el[kind + '-icon-btn']
-  menu.items = kind === 'model' ? modelMenuItems() : themeMenuItems()
-  menu.current = kind === 'model' ? currentModelId() : state.theme
-  menu.open = true
-  button.classList.add('is-open')
-  button.setAttribute('aria-expanded', 'true')
+  syncToolbar()
 }
 
 function toggleIconMenu(kind) {
@@ -3185,21 +3119,7 @@ function hideToolbarTip() {
 
 /** 原文 / 译文语言下拉 */
 function renderLangSelects() {
-  for (const [key, current] of [
-    ['source-lang', state.sourceLang],
-    ['target-lang', state.targetLang],
-  ]) {
-    const select = el[key]
-    select.replaceChildren()
-    for (const lang of LANGS) {
-      const option = document.createElement('wa-option')
-      option.value = lang
-      option.textContent = lang
-      select.appendChild(option)
-    }
-    select.value = current
-    ensureSelectChevron(select)
-  }
+  syncToolbar()
 }
 
 /* ---------------------------------------------------------------- 启动 */

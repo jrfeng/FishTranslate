@@ -19,16 +19,16 @@ const FALLBACK_ICONS = {
     '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="4.6" width="12" height="6.8" rx="1.4" /><circle cx="8" cy="8" r="1.6" /></svg>',
 }
 
-/// 菜单项 → 工具栏按钮 id
+/// 菜单项 → 工具栏按钮（用 data-role 定位，图标随主题实时变化）
 const TOOLBAR_SOURCES = {
-  model: 'model-icon-btn',
-  theme: 'theme-icon-btn',
-  settings: 'settings-icon-btn',
+  model: '[data-role="model-icon"]',
+  theme: '[data-role="theme-icon"]',
+  settings: '[data-role="settings-icon"]',
 }
 
 /** 克隆工具栏按钮里的 svg，并按画布尺寸补偿线宽，保证 16px 下粗细一致 */
-function cloneToolbarIcon(buttonId) {
-  const button = document.getElementById(buttonId)
+function cloneToolbarIcon(selector) {
+  const button = document.querySelector(selector)
   if (button === null) return null
   const source = button.querySelector('svg')
   if (source === null) return null

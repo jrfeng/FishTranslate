@@ -33,48 +33,14 @@
 
       <div class="workspace">
         <header class="head">
-          <div class="lang-pair">
-            <span class="field-label">原文</span>
-            <wa-select id="source-lang" size="s" appearance="outlined" class="lang-select" title="选择原文语言"></wa-select>
-            <span class="lang-arrow" aria-hidden="true">→</span>
-            <span class="field-label">译文</span>
-            <wa-select id="target-lang" size="s" appearance="outlined" class="lang-select" title="选择译文语言"></wa-select>
-          </div>
-          <div class="head-model">
-            <span class="field-label">模型</span>
-            <wa-select id="model-select" size="s" appearance="outlined" class="model-select" title="选择翻译使用的模型"></wa-select>
-            <button type="button" class="icon-btn" id="model-icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="选择模型">
-              <svg viewBox="0 0 16 16" aria-hidden="true">
-                <path d="M8 2 14 5.2 8 8.4 2 5.2z" />
-                <path d="M2 8.2 8 11.4 14 8.2" />
-                <path d="M2 11.2 8 14.4 14 11.2" />
-              </svg>
-            </button>
-            <ft-icon-menu class="icon-menu" id="model-menu" role="menu" hidden></ft-icon-menu>
-          </div>
-          <div class="head-tools">
-            <span class="field-label">主题</span>
-            <wa-select id="theme-select" size="s" appearance="outlined" class="theme-select" title="切换界面主题"></wa-select>
-            <button type="button" class="icon-btn" id="theme-icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="切换界面主题">
-              <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.6" /></svg>
-            </button>
-            <ft-icon-menu class="icon-menu" id="theme-menu" role="menu" hidden></ft-icon-menu>
-            <span class="settings-wrap">
-              <wa-button id="settings-toggle" appearance="plain" size="s">设置</wa-button>
-              <button type="button" class="icon-btn" id="settings-icon-btn" aria-label="设置">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg>
-              </button>
+          <ft-toolbar id="toolbar"></ft-toolbar>
+          <span class="toolbar-divider" id="balance-divider" hidden aria-hidden="true"></span>
+          <span class="balance-wrap" id="balance-wrap" hidden>
+            <wa-tag id="balance" variant="brand" size="s">余额</wa-tag>
+            <span class="progress-line balance-progress" id="balance-progress" hidden>
+              <span class="progress-line-runner"></span>
             </span>
-            <button type="button" class="icon-btn more-btn" id="more-btn" aria-haspopup="true" aria-expanded="false" aria-label="更多"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.4" cy="8" r="1.1" fill="currentColor" stroke="none" /><circle cx="8" cy="8" r="1.1" fill="currentColor" stroke="none" /><circle cx="12.6" cy="8" r="1.1" fill="currentColor" stroke="none" /></svg></button>
-            <ft-more-menu class="more-menu" id="more-menu" role="menu" hidden></ft-more-menu>
-            <span class="toolbar-divider" id="balance-divider" hidden aria-hidden="true"></span>
-            <span class="balance-wrap" id="balance-wrap" hidden>
-              <wa-tag id="balance" variant="brand" size="s">余额</wa-tag>
-              <span class="progress-line balance-progress" id="balance-progress" hidden>
-                <span class="progress-line-runner"></span>
-              </span>
-            </span>
-          </div>
+          </span>
         </header>
 
         <script src="/boot-body.js"></script>

@@ -474,6 +474,11 @@ html[data-theme='c'] .win-btn-close:hover {
 
 /* ------------------------------------------------------------ 顶栏工具栏*/
 
+/* 工具栏组件本身不产生盒子，子元素直接参与 .head 的 flex 布局 */
+ft-toolbar {
+  display: contents;
+}
+
 .head {
   display: flex;
   align-items: center;
@@ -2631,7 +2636,7 @@ html[data-theme='d'] .toolbar-tip {
   }
 
   /* 设置一栏：文字按钮换成齿轮图标 */
-  #settings-toggle {
+  .settings-text {
     display: none;
   }
 }
@@ -2835,10 +2840,10 @@ html[data-theme='d'] .card-icon-btn.on {
   }
 
   /* 模型 / 主题 / 设置 / 余额 收进「更多」菜单 */
-  #model-icon-btn,
-  #theme-icon-btn,
-  #settings-icon-btn,
-  #settings-toggle,
+  [data-role='model-icon'],
+  [data-role='theme-icon'],
+  [data-role='settings-icon'],
+  .settings-text,
   #balance-wrap,
   #balance-divider {
     display: none;
