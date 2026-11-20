@@ -43,6 +43,7 @@ import './components/ft-theme-picker.js'
 import './components/ft-more-menu.js'
 import './components/ft-icon-menu.js'
 import './components/ft-toolbar.js'
+import './components/ft-settings-sheet.js'
 
 const MAX_TERMS = 50
 const COPIED_MS = 1600
@@ -210,8 +211,7 @@ for (const id of [
   'model-picker',
   'theme-picker',
   'balance-dialog',
-  'settings-x',
-  'settings',
+  'settings-sheet',
   'balance',
   'balance-wrap',
   'balance-progress',
@@ -248,11 +248,6 @@ for (const id of [
   'win-min',
   'win-max',
   'win-close',
-  'api-key',
-  'base-url',
-  'save-settings',
-  'model-status',
-  'model-status-text',
   'model-select',
   'char-count',
   'char-count-head',
@@ -828,7 +823,13 @@ function renderChrome() {  const loading = state.phase === 'loading'
   el['image-zoom-icon'].dataset.tip = '校验识别结果'
   el['image-refresh'].dataset.tip = '重新识别'
 
-  el.settings.hidden = !state.settingsOpen
+  const settingsSheet = el['settings-sheet']
+  if (settingsSheet !== null && settingsSheet !== undefined) {
+    settingsSheet.open = state.settingsOpen
+    settingsSheet.apiKey = config.apiKey
+    settingsSheet.baseUrl = config.baseURL === DEFAULT_BASE_URL ? '' : config.baseURL
+    settingsSheet.basePlaceholder = DEFAULT_BASE_URL
+  }
   if (el['toolbar'] !== null && el['toolbar'] !== undefined) {
     el['toolbar'].settingsOpen = state.settingsOpen
   }
@@ -1175,8 +1176,6 @@ async function run() {
   if (config.apiKey.length === 0) {
     state.settingsOpen = true
     renderChrome()
-    if (typeof el['api-key'].focus === 'function') el['api-key'].focus()
-    el['api-key'].focus()
     // 设置面板可能被折叠或滚出视野，再补一条 Toast，避免用户以为按钮没反应
     showToast('未提供 API Key，请提供后再翻译。', 'warn')
     return
@@ -1430,15 +1429,9 @@ const VIEW_EYE_ICON =
 
 /** 模型列表状态：idle / loading / ok / fail，显示在「接口地址」标签右边 */
 function setModelStatus(kind, text) {
-  const box = el['model-status']
-  if (box === null || box === undefined) return
-  box.hidden = kind === 'idle'
-  box.classList.remove('is-ok', 'is-fail', 'is-loading')
-  if (kind === 'ok') box.classList.add('is-ok')
-  if (kind === 'fail') box.classList.add('is-fail')
-  if (kind === 'loading') box.classList.add('is-loading')
-  el['model-status-text'].textContent = text
-  box.title = kind === 'fail' ? text : ''
+  const sheet = el['settings-sheet']
+  if (sheet === null || sheet === undefined) return
+  sheet.status = { kind, text }
 }
 
 /** 启动时先用上次缓存的模型列表渲染，避免下拉框空着 */
@@ -1471,6 +1464,7 @@ function contextRegion(event) {
     }
     if (node.id === 'output' || node.id === 'verify-preview') return 'output'
     if (node.id === 'api-key' || node.id === 'api-key-legacy') return 'key'
+    if (node.dataset !== undefined && node.dataset.field === 'api-key') return 'key'
     if (typeof node.tagName !== 'string') continue
     const tag = node.tagName.toUpperCase()
     if (tag === 'TEXTAREA') return 'source'
@@ -2375,23 +2369,16 @@ function bind() {
   el['term-add-icon'].addEventListener('click', addTerm)
   el['term-add-foot'].addEventListener('click', addTerm)
 
-  el['settings-x'].addEventListener('click', () => {
+  el['settings-sheet'].addEventListener('close', () => {
     state.settingsOpen = false
     renderChrome()
   })
 
-  // 点遮罩空白处关闭（点面板内部不关）
-  el['settings'].addEventListener('mousedown', (event) => {
-    if (event.target !== el['settings']) return
-    state.settingsOpen = false
-    renderChrome()
-  })
-
-  el['save-settings'].addEventListener('click', () => {
+  el['settings-sheet'].addEventListener('save', (event) => {
     const previousKey = config.apiKey
     const previousBase = config.baseURL
-    config.apiKey = el['api-key'].value.trim()
-    const base = el['base-url'].value.trim()
+    config.apiKey = event.detail.apiKey
+    const base = event.detail.baseUrl
     config.baseURL = base.length > 0 ? base : DEFAULT_BASE_URL
     saveSettings()
     // 换了 Key 或接口地址，旧缓存就属于另一个账号了，先清掉免得显示错数据
@@ -3131,9 +3118,6 @@ if (el['app-version'] !== null && el['app-version'] !== undefined) {
 applyTheme(state.theme)
 renderThemeSelect()
 renderLangSelects()
-el['api-key'].value = config.apiKey
-el['base-url'].value = config.baseURL === DEFAULT_BASE_URL ? '' : config.baseURL
-el['base-url'].placeholder = DEFAULT_BASE_URL
 el.source.value = state.input
 bind()
 initSizeBadge()
