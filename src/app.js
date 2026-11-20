@@ -37,6 +37,10 @@ window.addEventListener('unhandledrejection', (event) => {
   showFatalError(reason && reason.message ? String(reason.message) : String(reason))
 })
 
+import './components/ft-balance-dialog.js'
+import './components/ft-model-picker.js'
+import './components/ft-theme-picker.js'
+
 const MAX_TERMS = 50
 const COPIED_MS = 1600
 
@@ -203,21 +207,9 @@ for (const id of [
   'mobile-terms-label',
   'mobile-translate',
   'more-menu',
-  'model-modal',
-  'model-modal-list',
-  'model-modal-x',
-  'model-modal-cancel',
-  'model-modal-done',
-  'theme-modal',
-  'theme-modal-list',
-  'theme-modal-x',
-  'theme-modal-done',
-  'balance-modal',
-  'balance-modal-x',
-  'balance-modal-refresh',
-  'balance-modal-ok',
-  'balance-modal-progress',
-  'balance-amount',
+  'model-picker',
+  'theme-picker',
+  'balance-dialog',
   'settings-x',
   'settings',
   'balance',
@@ -776,8 +768,10 @@ function renderChrome() {  const loading = state.phase === 'loading'
   // 非 DeepSeek 地址没有余额接口
   if (!usesDeepSeekEndpoint()) setBalanceVisible(false)
   el['balance-progress'].hidden = !state.balanceBusy
-  el['balance-modal-progress'].classList.toggle('is-idle', !state.balanceBusy)
-  el['balance-modal-refresh'].disabled = state.balanceBusy
+  if (el['balance-dialog'] !== null && el['balance-dialog'] !== undefined) {
+    el['balance-dialog'].busy = state.balanceBusy
+  }
+  
   el['image-refresh'].hidden = !state.ocrDone
   el['image-refresh'].disabled = ocrBusy || loading
   el['image-refresh'].classList.toggle('is-spinning', ocrBusy)
@@ -2311,51 +2305,40 @@ function bind() {
     renderChrome()
   })
 
-  el['model-modal-x'].addEventListener('click', () => {
-    state.modelPickerOpen = false
+  el['model-picker'].addEventListener('select', (event) => {
+    state.pendingModel = event.detail
     renderChrome()
   })
-  el['model-modal-cancel'].addEventListener('click', () => {
+  el['model-picker'].addEventListener('confirm', (event) => {
     state.modelPickerOpen = false
-    renderChrome()
-  })
-  el['model-modal-done'].addEventListener('click', () => {
-    state.modelPickerOpen = false
-    state.selectedModel = state.pendingModel
-    config.model = state.pendingModel
+    state.selectedModel = event.detail
+    config.model = event.detail
     saveSettings()
     renderModels()
     renderChrome()
   })
+  el['model-picker'].addEventListener('close', () => {
+    state.modelPickerOpen = false
+    renderChrome()
+  })
 
-  el['theme-modal-x'].addEventListener('click', () => {
+  el['theme-picker'].addEventListener('select', (event) => {
+    // 主题点一下就生效，弹窗留着让用户继续比较
+    state.pendingTheme = event.detail
+    applyTheme(event.detail)
+    writeStore(KEYS.theme, state.theme)
+    renderChrome()
+  })
+  el['theme-picker'].addEventListener('close', () => {
     state.themePickerOpen = false
     renderChrome()
   })
-  el['theme-modal-done'].addEventListener('click', () => {
-    state.themePickerOpen = false
-    renderChrome()
-  })
 
-  el['balance-modal-x'].addEventListener('click', () => {
+  el['balance-dialog'].addEventListener('close', () => {
     state.balanceOpen = false
     renderChrome()
   })
-  el['balance-modal-ok'].addEventListener('click', () => {
-    state.balanceOpen = false
-    renderChrome()
-  })
-  el['balance-modal-refresh'].addEventListener('click', () => void refreshBalance(true))
-
-  for (const id of ['model-modal', 'theme-modal', 'balance-modal']) {
-    el[id].addEventListener('mousedown', (event) => {
-      if (event.target !== el[id]) return
-      if (id === 'model-modal') state.modelPickerOpen = false
-      else if (id === 'theme-modal') state.themePickerOpen = false
-      else state.balanceOpen = false
-      renderChrome()
-    })
-  }
+  el['balance-dialog'].addEventListener('refresh', () => void refreshBalance(true))
 
   el['terms-icon'].addEventListener('click', () => {
     state.termsModalOpen = true
@@ -3122,66 +3105,28 @@ function openBalanceModal() {
   state.balanceOpen = true
 }
 
-function renderPickerLists() {
-  const modelList = el['model-modal-list']
-  modelList.replaceChildren()
-  const models = state.models.length > 0 ? state.models : [{ id: currentModelId() }]
-  for (const item of models) {
-    const row = document.createElement('div')
-    row.className = 'picker-item' + (item.id === state.pendingModel ? ' is-current' : '')
-    row.setAttribute('role', 'option')
-    row.setAttribute('aria-selected', String(item.id === state.pendingModel))
-    const tick = document.createElement('span')
-    tick.className = 'tick'
-    if (item.id === state.pendingModel) {
-      tick.innerHTML =
-        '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.4 4.8 9 10 3.2" /></svg>'
-    }
-    const label = document.createElement('span')
-    label.textContent = item.id
-    row.append(tick, label)
-    row.addEventListener('click', () => {
-      state.pendingModel = item.id
-      renderChrome()
-    })
-    modelList.appendChild(row)
-  }
-
-  const themeList = el['theme-modal-list']
-  themeList.replaceChildren()
-  for (const item of THEMES) {
-    const row = document.createElement('div')
-    row.className = 'picker-item' + (item.id === state.pendingTheme ? ' is-current' : '')
-    row.setAttribute('role', 'option')
-    row.setAttribute('aria-selected', String(item.id === state.pendingTheme))
-    const tick = document.createElement('span')
-    tick.className = 'tick'
-    if (item.id === state.pendingTheme) {
-      tick.innerHTML =
-        '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.4 4.8 9 10 3.2" /></svg>'
-    }
-    const label = document.createElement('span')
-    label.textContent = item.name
-    row.append(tick, label)
-    row.addEventListener('click', () => {
-      // 主题点一下就生效，弹窗留着让用户继续比较
-      state.pendingTheme = item.id
-      applyTheme(item.id)
-      writeStore(KEYS.theme, state.theme)
-      renderChrome()
-    })
-    themeList.appendChild(row)
-  }
-}
-
 function syncMoreUi() {
-  el['model-modal'].hidden = !state.modelPickerOpen
-  el['theme-modal'].hidden = !state.themePickerOpen
-  el['balance-modal'].hidden = !state.balanceOpen
-  if (state.modelPickerOpen || state.themePickerOpen) renderPickerLists()
-  if (state.balanceOpen) {
-    el['balance-amount'].textContent =
-      String(el.balance.textContent || '').replace(/^余额\s*/, '') || '--'
+  const modelPicker = el['model-picker']
+  if (modelPicker !== null && modelPicker !== undefined) {
+    modelPicker.open = state.modelPickerOpen
+    modelPicker.value = state.pendingModel
+    if (state.modelPickerOpen) {
+      modelPicker.items = state.models.length > 0 ? state.models : [{ id: currentModelId() }]
+    }
+  }
+  const themePicker = el['theme-picker']
+  if (themePicker !== null && themePicker !== undefined) {
+    themePicker.open = state.themePickerOpen
+    themePicker.value = state.pendingTheme
+    if (state.themePickerOpen) themePicker.items = THEMES
+  }
+  const balanceDialog = el['balance-dialog']
+  if (balanceDialog !== null && balanceDialog !== undefined) {
+    balanceDialog.open = state.balanceOpen
+    balanceDialog.busy = state.balanceBusy
+    if (state.balanceOpen) {
+      balanceDialog.amount = String(el.balance.textContent || '').replace(/^余额\s*/, '')
+    }
   }
 }
 

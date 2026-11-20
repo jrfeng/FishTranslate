@@ -336,56 +336,9 @@
     <script type="module" src="/app.js"></script>
     <div class="ctx-menu" id="ctx-menu" role="menu" aria-label="上下文菜单" hidden></div>
   
-  <div class="modal-overlay" id="model-modal" hidden>
-    <div class="modal picker-modal" role="dialog" aria-modal="true" aria-label="模型">
-      <div class="modal-head">
-        <span class="modal-title">模型</span>
-        <button type="button" class="modal-close" id="model-modal-x" title="关闭" aria-label="关闭">
-          <svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6" /></svg>
-        </button>
-      </div>
-      <div class="picker-list" id="model-modal-list"></div>
-      <div class="modal-foot">
-        <wa-button id="model-modal-cancel" appearance="plain" size="s">取消</wa-button>
-        <wa-button id="model-modal-done" variant="brand" size="s">完成</wa-button>
-      </div>
-    </div>
-  </div>
+  <ft-model-picker id="model-picker"></ft-model-picker>
+  <ft-theme-picker id="theme-picker"></ft-theme-picker>
 
-  <div class="modal-overlay" id="theme-modal" hidden>
-    <div class="modal picker-modal" role="dialog" aria-modal="true" aria-label="主题">
-      <div class="modal-head">
-        <span class="modal-title">主题</span>
-        <button type="button" class="modal-close" id="theme-modal-x" title="关闭" aria-label="关闭">
-          <svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6" /></svg>
-        </button>
-      </div>
-      <div class="picker-list" id="theme-modal-list"></div>
-      <div class="modal-foot">
-        <wa-button id="theme-modal-done" variant="brand" size="s">完成</wa-button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="balance-modal" hidden>
-    <div class="modal balance-modal" role="dialog" aria-modal="true" aria-label="余额">
-      <div class="modal-head">
-        <span class="modal-title">余额</span>
-        <button type="button" class="modal-close" id="balance-modal-x" title="关闭" aria-label="关闭">
-          <svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6" /></svg>
-        </button>
-      </div>
-      <div class="progress-line balance-modal-progress is-idle" id="balance-modal-progress" aria-hidden="true">
-        <span class="progress-line-runner"></span>
-      </div>
-      <div class="balance-body">
-        <span class="balance-amount" id="balance-amount">--</span>
-      </div>
-      <div class="modal-foot">
-        <wa-button id="balance-modal-refresh" appearance="plain" size="s">刷新</wa-button>
-        <wa-button id="balance-modal-ok" variant="brand" size="s">关闭</wa-button>
-      </div>
-    </div>
-  </div>
+  <ft-balance-dialog id="balance-dialog"></ft-balance-dialog>
 </body>
 </html>
