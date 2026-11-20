@@ -40,6 +40,7 @@ window.addEventListener('unhandledrejection', (event) => {
 import './components/ft-balance-dialog.js'
 import './components/ft-model-picker.js'
 import './components/ft-theme-picker.js'
+import './components/ft-more-menu.js'
 
 const MAX_TERMS = 50
 const COPIED_MS = 1600
@@ -2279,8 +2280,18 @@ function bind() {
 
   el['more-btn'].addEventListener('click', (event) => {
     event.stopPropagation()
-    if (state.moreMenuOpen) closeMoreMenu()
-    else openMoreMenu()
+    state.moreMenuOpen = !state.moreMenuOpen
+    renderChrome()
+  })
+
+  el['more-menu'].addEventListener('select', (event) => {
+    state.moreMenuOpen = false
+    const key = event.detail
+    if (key === 'model') openModelPicker()
+    else if (key === 'theme') openThemePicker()
+    else if (key === 'settings') state.settingsOpen = true
+    else openBalanceModal()
+    renderChrome()
   })
 
   // 点外部关闭「更多」菜单
@@ -2288,14 +2299,16 @@ function bind() {
     if (!state.moreMenuOpen) return
     if (el['more-menu'].contains(event.target)) return
     if (el['more-btn'].contains(event.target)) return
-    closeMoreMenu()
+    state.moreMenuOpen = false
+    renderChrome()
   })
 
   // Esc：先关菜单，再关各弹窗
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return
     if (state.moreMenuOpen) {
-      closeMoreMenu()
+      state.moreMenuOpen = false
+      renderChrome()
       return
     }
     if (!state.modelPickerOpen && !state.themePickerOpen && !state.balanceOpen) return
@@ -2958,53 +2971,8 @@ const THEME_ICONS = {
   d: '<circle cx="8" cy="8" r="5.6" /><path class="icon-fill" d="M8 2.4a5.6 5.6 0 0 1 0 11.2z" />',
 }
 
-/* ------------------------------------------------- 640 以下的「更多」菜单 */
-
-const MORE_ICONS = {
-  model:
-    '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2 14 5.2 8 8.4 2 5.2z" /><path d="M2 8.2 8 11.4 14 8.2" /><path d="M2 11.2 8 14.4 14 11.2" /></svg>',
-  theme:
-    '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.6" /><path d="M8 2.4a5.6 5.6 0 0 1 0 11.2z" fill="currentColor" stroke="none" /></svg>',
-  settings:
-    '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.4" /><path d="M8 1.4v2M8 12.6v2M1.4 8h2M12.6 8h2M3.3 3.3l1.4 1.4M11.3 11.3l1.4 1.4M12.7 3.3l-1.4 1.4M4.7 11.3l-1.4 1.4" /></svg>',
-  balance:
-    '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="4.6" width="12" height="6.8" rx="1.4" /><circle cx="8" cy="8" r="1.6" /></svg>',
-}
-
-/// 「更多」菜单里复用工具栏按钮的图标（模型 / 主题 / 设置）
-const MORE_ICON_SOURCES = {
-  model: 'model-icon-btn',
-  theme: 'theme-icon-btn',
-  settings: 'settings-icon-btn',
-}
-
-/** 克隆工具栏按钮里的 svg，并按画布尺寸补偿线宽，保证 16px 下粗细一致 */
-function cloneToolbarIcon(buttonId) {
-  const button = el[buttonId]
-  if (button === null || button === undefined) return null
-  const source = button.querySelector('svg')
-  if (source === null) return null
-  const clone = source.cloneNode(true)
-  const box = String(clone.getAttribute('viewBox') || '0 0 16 16').split(/[\s,]+/)
-  const gridSize = Number(box[2]) || 16
-  clone.setAttribute('width', '16')
-  clone.setAttribute('height', '16')
-  // 目标渲染线宽 1.4px：16 网格 → 1.4，24 网格 → 2.1
-  clone.style.strokeWidth = String((1.4 * gridSize) / 16)
-  clone.removeAttribute('class')
-  return clone
-}
-
 function currentModelId() {
   return state.selectedModel || config.model || DEFAULT_MODEL
-}
-
-function closeMoreMenu() {
-  if (!state.moreMenuOpen) return
-  state.moreMenuOpen = false
-  el['more-menu'].hidden = true
-  el['more-btn'].classList.remove('is-open')
-  el['more-btn'].setAttribute('aria-expanded', 'false')
 }
 
 function moreMenuItems() {
@@ -3031,8 +2999,9 @@ function closeCompactDialogs() {
 }
 
 function handleCompactExit() {
-  closeMoreMenu()
+  state.moreMenuOpen = false
   closeCompactDialogs()
+  renderChrome()
 }
 
 let compactWidth = window.innerWidth <= 640
@@ -3048,48 +3017,6 @@ function syncCompactWidth() {
 compactMoreQuery.addEventListener('change', syncCompactWidth)
 // matchMedia 在部分环境（弹窗打开、虚拟时间等）不一定派发 change，resize 同步兜一道
 window.addEventListener('resize', syncCompactWidth)
-
-function openMoreMenu() {
-  closeMoreMenu()
-  state.moreMenuOpen = true
-  const menu = el['more-menu']
-  menu.replaceChildren()
-  for (const item of moreMenuItems()) {
-    const row = document.createElement('div')
-    row.className = 'more-item'
-    row.setAttribute('role', 'menuitem')
-    const ico = document.createElement('span')
-    ico.className = 'ico'
-    const sourceId = MORE_ICON_SOURCES[item.key]
-    const clonedIcon = sourceId === undefined ? null : cloneToolbarIcon(sourceId)
-    if (clonedIcon !== null) {
-      ico.appendChild(clonedIcon)
-    } else {
-      ico.innerHTML = MORE_ICONS[item.key]
-    }
-    const label = document.createElement('span')
-    label.textContent = item.label
-    row.append(ico, label)
-    if (item.value.length > 0) {
-      const val = document.createElement('span')
-      val.className = 'val'
-      val.textContent = item.value
-      row.appendChild(val)
-    }
-    row.addEventListener('click', () => {
-      closeMoreMenu()
-      if (item.key === 'model') openModelPicker()
-      else if (item.key === 'theme') openThemePicker()
-      else if (item.key === 'settings') state.settingsOpen = true
-      else openBalanceModal()
-      renderChrome()
-    })
-    menu.appendChild(row)
-  }
-  menu.hidden = false
-  el['more-btn'].classList.add('is-open')
-  el['more-btn'].setAttribute('aria-expanded', 'true')
-}
 
 function openModelPicker() {
   state.pendingModel = currentModelId()
@@ -3120,6 +3047,14 @@ function syncMoreUi() {
     themePicker.value = state.pendingTheme
     if (state.themePickerOpen) themePicker.items = THEMES
   }
+  const moreMenu = el['more-menu']
+  if (moreMenu !== null && moreMenu !== undefined) {
+    moreMenu.items = moreMenuItems()
+    moreMenu.open = state.moreMenuOpen
+  }
+  el['more-btn'].classList.toggle('is-open', state.moreMenuOpen)
+  el['more-btn'].setAttribute('aria-expanded', String(state.moreMenuOpen))
+
   const balanceDialog = el['balance-dialog']
   if (balanceDialog !== null && balanceDialog !== undefined) {
     balanceDialog.open = state.balanceOpen
