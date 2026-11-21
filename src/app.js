@@ -941,6 +941,19 @@ function hideContextMenu() {
   el['ctx-menu'].hidden = true
   el['ctx-menu'].classList.remove('ctx-idle')
   window.clearTimeout(ctxIdleTimer)
+  setContextActive(-1)
+}
+
+let ctxActiveIndex = -1
+
+/** 把键盘高亮挪到第 index 项（index = -1 表示没有高亮） */
+function setContextActive(index) {
+  const menu = el['ctx-menu']
+  if (menu === null || menu === undefined) return
+  const items = Array.from(menu.querySelectorAll('.ctx-item:not(:disabled)'))
+  ctxActiveIndex = index
+  for (const item of items) item.classList.remove('is-active')
+  if (index >= 0 && index < items.length) items[index].classList.add('is-active')
 }
 
 function isContextMenuOpen() {
@@ -1001,15 +1014,16 @@ function showContextMenu(items, x, y) {
   }
   document.addEventListener('pointermove', releaseIdle, true)
 
-  // preventScroll：聚焦菜单容器时不要让页面滚动，否则会触发 scroll 事件把菜单关掉
-  menu.focus({ preventScroll: true })
+  // 关键：不把焦点移到菜单上。否则输入框（或页面选区）失焦，
+  // 浏览器会停止绘制选中高亮，用户右键时选区看起来就「消失」了。
+  // 键盘操作用自己的高亮索引（ctxActiveIndex），不依赖 DOM 焦点。
+  setContextActive(-1)
 }
 
 function handleContextMenuKeydown(event) {
   if (!isContextMenuOpen()) return
   const items = Array.from(el['ctx-menu'].querySelectorAll('.ctx-item:not(:disabled)'))
   if (items.length === 0) return
-  const index = items.indexOf(document.activeElement)
 
   if (event.key === 'Escape') {
     event.preventDefault()
@@ -1018,17 +1032,17 @@ function handleContextMenuKeydown(event) {
   }
   if (event.key === 'ArrowDown') {
     event.preventDefault()
-    items[(index + 1 + items.length) % items.length].focus()
+    setContextActive((ctxActiveIndex + 1 + items.length) % items.length)
     return
   }
   if (event.key === 'ArrowUp') {
     event.preventDefault()
-    items[(index - 1 + items.length) % items.length].focus()
+    setContextActive((ctxActiveIndex - 1 + items.length) % items.length)
     return
   }
   if (event.key === 'Enter') {
     event.preventDefault()
-    if (index >= 0) items[index].click()
+    if (ctxActiveIndex >= 0) items[ctxActiveIndex].click()
   }
 }
 

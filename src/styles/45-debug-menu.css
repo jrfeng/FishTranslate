@@ -62,7 +62,8 @@ html[data-theme='b'] .ctx-menu {
 }
 
 .ctx-item:hover,
-.ctx-item:focus-visible {
+.ctx-item:focus-visible,
+.ctx-item.is-active {
   background: var(--app-panel-2);
   outline: none;
 }
