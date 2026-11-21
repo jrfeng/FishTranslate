@@ -540,6 +540,26 @@ html[data-theme='d'] .card-icon-btn.on {
   /* 待实现（如果需要单独一档） */
 }
 
+/* 工具栏紧凑档（≤648）：右侧的 模型 / 主题 / 设置 / 余额 收进「更多」菜单
+   —— 只影响工具栏，卡片布局仍在 640 才改单列 */
+@media (max-width: 648px) {
+  [data-role='model-icon'],
+  [data-role='theme-icon'],
+  [data-role='settings-icon'],
+  .settings-text,
+  #balance-wrap,
+  #balance-divider {
+    display: none;
+  }
+
+  #more-btn {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 auto;
+  }
+}
+
 /* 紧凑档（≤640）：两列改单列，顺序是 原文 → 术语 → 译文 */
 @media (max-width: 640px) {
   .grid {
@@ -563,23 +583,6 @@ html[data-theme='d'] .card-icon-btn.on {
   .grid > .card-grow textarea,
   .grid > .card-grow .editor {
     min-height: 0;
-  }
-
-  /* 模型 / 主题 / 设置 / 余额 收进「更多」菜单 */
-  [data-role='model-icon'],
-  [data-role='theme-icon'],
-  [data-role='settings-icon'],
-  .settings-text,
-  #balance-wrap,
-  #balance-divider {
-    display: none;
-  }
-
-  #more-btn {
-    display: inline-flex;
-    width: 36px;
-    height: 36px;
-    flex: 0 0 auto;
   }
 
   /* 术语入口从独立一行挪到原文卡片工具栏 */

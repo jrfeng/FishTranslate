@@ -1990,10 +1990,10 @@ function moreMenuItems() {
   ]
 }
 
-/// 窗口从 ≤640 被拉宽后，「更多」按钮会消失，菜单必须一起收起
-const compactMoreQuery = window.matchMedia('(max-width: 640px)')
+/// 窗口从 ≤648 被拉宽后，「更多」按钮会消失，菜单必须一起收起
+const compactMoreQuery = window.matchMedia('(max-width: 648px)')
 
-/** 拉宽到 >640 后，从「更多」打开的模型 / 主题 / 余额弹窗要一起收起。
+/** 拉宽到 >648 后，从「更多」打开的模型 / 主题 / 余额弹窗要一起收起。
     设置除外：它任何宽度下都是独立弹窗，和工具栏布局无关。 */
 function closeCompactDialogs() {
   if (!state.modelPickerOpen && !state.themePickerOpen && !state.balanceOpen) return
@@ -2009,11 +2009,11 @@ function handleCompactExit() {
   renderChrome()
 }
 
-let compactWidth = window.innerWidth <= 640
+let compactWidth = window.innerWidth <= 648
 
 /// 同步一次「是否处于窄布局」，从窄变宽时收起菜单和弹窗
 function syncCompactWidth() {
-  const compact = window.innerWidth <= 640
+  const compact = window.innerWidth <= 648
   if (compact === compactWidth) return
   compactWidth = compact
   if (!compact) handleCompactExit()
