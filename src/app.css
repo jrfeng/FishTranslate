@@ -2743,7 +2743,7 @@ html[data-theme='d'] .card-icon-btn.on {
 }
 
 /* 预览 / Markdown 图标线更细，和清除、Copy 保持一致 */
-.card-icon-btn#view-icon svg {
+.card-icon-btn[data-ref="viewIcon"] svg {
   stroke-width: 1.1;
 }
 
@@ -2792,8 +2792,8 @@ html[data-theme='d'] .card-icon-btn.on {
 
   #immediate,
   #clear,
-  #auto-copy,
-  #view-toggle {
+  .output-auto-copy-text,
+  .output-view-toggle {
     display: none;
   }
 }

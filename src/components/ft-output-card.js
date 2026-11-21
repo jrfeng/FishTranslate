@@ -30,11 +30,11 @@ const TEMPLATE = `
       <div class="card-meta">
         <button type="button" class="card-icon-btn" data-ref="autoCopyIcon" role="switch" aria-checked="false" title="自动复制"><svg viewBox="0 0 48 48" class="icon-auto-copy" aria-hidden="true"><g transform="translate(5 -0.5) scale(0.72)" stroke-width="2.8"><path d="M13 12.4316V7.8125C13 6.2592 14.2592 5 15.8125 5H40.1875C41.7408 5 43 6.2592 43 7.8125V32.1875C43 33.7408 41.7408 35 40.1875 35H35.5163" /><path d="M32.1875 13H7.8125C6.2592 13 5 14.2592 5 15.8125V40.1875C5 41.7408 6.2592 43 7.8125 43H32.1875C33.7408 43 35 41.7408 35 40.1875V15.8125C35 14.2592 33.7408 13 32.1875 13Z" /></g><text x="24" y="42.6" font-size="10" font-family="Arial, sans-serif" text-anchor="middle" fill="currentColor" stroke="none" font-weight="700" letter-spacing="0.6">AUTO</text></svg></button>
         <button type="button" class="card-icon-btn" data-ref="viewIcon" title="切换到预览"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 7.2 4.4 12l4.2 4.8" /><path d="M15.4 7.2 19.6 12l-4.2 4.8" /></svg></button>
-        <button type="button" class="toggle" data-ref="autoCopy" role="switch" aria-checked="false" title="开启后，翻译完成自动复制译文">
+        <button type="button" class="toggle output-auto-copy-text" data-ref="autoCopy" role="switch" aria-checked="false" title="开启后，翻译完成自动复制译文">
           <span class="toggle-dot" aria-hidden="true"></span>
           <span class="toggle-text">自动复制</span>
         </button>
-        <wa-button data-ref="viewToggle" appearance="outlined" size="s" disabled>Markdown</wa-button>
+        <wa-button class="output-view-toggle" data-ref="viewToggle" appearance="outlined" size="s" disabled>Markdown</wa-button>
         <wa-button data-ref="copy" appearance="outlined" size="s" disabled>复制</wa-button>
       </div>
     </div>
