@@ -5,7 +5,6 @@
  * 术语表、模型选择、自动复制、进度动画，以及把请求发给本机服务。
  */
 
-import { htmlToMarkdown } from './markdown-from-html.js'
 import {
   escapeHtml,
   safeHref,
@@ -39,6 +38,13 @@ import {
   usageChipText,
   usageFootText,
 } from './lib/usage.js'
+import {
+  normalizePlainText,
+  htmlToMarkdownOrText,
+  insertInto,
+  selectionOf,
+  legacyCopy,
+} from './lib/clipboard.js'
 
 /* ------------------------------------------------------------ 常量与状态 */
 
@@ -590,24 +596,6 @@ function syncHighlight() {
 
 /* ---------------------------------------------------------------- 复制 */
 
-function legacyCopy(text) {
-  try {
-    const area = document.createElement('textarea')
-    area.value = text
-    area.setAttribute('readonly', '')
-    area.style.position = 'fixed'
-    area.style.top = '-9999px'
-    area.style.opacity = '0'
-    document.body.appendChild(area)
-    area.select()
-    const copied = document.execCommand('copy')
-    document.body.removeChild(area)
-    return copied
-  } catch {
-    return false
-  }
-}
-
 async function copyText(text) {
   if (text.length === 0) return false
   let copied = false
@@ -981,46 +969,11 @@ async function clipboardReadContent() {
 }
 
 /** 纯文本粘贴前的规整：统一换行、去掉零宽字符与行尾空白 */
-function normalizePlainText(raw) {
-  return String(raw || '')
-    .replace(/\r\n?/g, '\n')
-    .replace(/[\u200b\u200c\u200d\ufeff]/g, '')
-    .split('\n')
-    .map((line) => line.replace(/[ \t]+$/, ''))
-    .join('\n')
-}
-
-/** 把 HTML 片段转成 Markdown；转不动就退回纯文本 */
-function htmlToMarkdownOrText(html, fallbackText) {
-  if (typeof html === 'string' && html.trim().length > 0) {
-    try {
-      const markdown = htmlToMarkdown(html)
-      if (markdown.length > 0) return markdown
-    } catch (error) {
-      /* 解析失败就走纯文本 */
-    }
-  }
-  return fallbackText
-}
-
 function clipboardWriteText(text) {
   return invokeTauri('clipboard_write', { text })
 }
 
 /** 往 textarea / input 里插入文本，并把光标放到插入内容之后 */
-function insertInto(input, text) {
-  const start = input.selectionStart ?? input.value.length
-  const end = input.selectionEnd ?? input.value.length
-  input.setRangeText(text, start, end, 'end')
-  input.dispatchEvent(new Event('input', { bubbles: true }))
-}
-
-function selectionOf(input) {
-  const start = input.selectionStart ?? 0
-  const end = input.selectionEnd ?? 0
-  return start === end ? '' : input.value.slice(start, end)
-}
-
 function buildContextItems(region, event) {
   const input = contextInputElement(event)
   const items = []
