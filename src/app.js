@@ -33,6 +33,12 @@ import {
   THEMES,
 } from './lib/constants.js'
 import { taskBrief, composeSource } from './lib/prompt.js'
+import {
+  buildUsage,
+  usageRows,
+  usageChipText,
+  usageFootText,
+} from './lib/usage.js'
 
 /* ------------------------------------------------------------ 常量与状态 */
 
@@ -433,52 +439,16 @@ function renderChrome() {  const loading = state.phase === 'loading'
 /* ---------------------------------------------------------------- 用量 */
 
 /** 数字加千分位，例如 2626595 → 2,626,595 */
-function formatTokens(value) {
-  const n = Number(value)
-  if (!Number.isFinite(n)) return '0'
-  return Math.round(n).toLocaleString('en-US')
-}
-
-/** 接口地址 → 提供方名字，用于明细里的「提供方 / 模型」 */
-function providerLabel() {
-  const base = String(config.baseURL || '')
-  if (base.indexOf('deepseek.com') !== -1) return 'deepseek'
-  try {
-    return new URL(base).hostname || '自定义'
-  } catch {
-    return '自定义'
-  }
-}
-
 /** 记录一次翻译的 usage，并刷新胶囊与浮层 */
 function recordUsage(payload) {
-  const usage = payload && payload.usage && typeof payload.usage === 'object' ? payload.usage : null
+  const usage = buildUsage(payload, { baseURL: config.baseURL, fallbackModel: config.model })
   if (usage === null) {
     state.usage = null
     renderUsage()
     return
   }
-
-  const prompt = Number(usage.prompt_tokens) || 0
-  const completion = Number(usage.completion_tokens) || 0
-  const total = Number(usage.total_tokens) || prompt + completion
-  const hit = Number(usage.prompt_cache_hit_tokens) || 0
-  const miss = Number(usage.prompt_cache_miss_tokens) || 0
-  const hasCache =
-    usage.prompt_cache_hit_tokens !== undefined || usage.prompt_cache_miss_tokens !== undefined
-
-  state.usage = {
-    model: typeof payload.model === 'string' && payload.model.length > 0 ? payload.model : config.model,
-    provider: providerLabel(),
-    prompt,
-    completion,
-    total,
-    hit,
-    miss,
-    hasCache,
-    hitRate: prompt > 0 ? hit / prompt : null,
-  }
-  state.usageTotal += total
+  state.usage = usage
+  state.usageTotal += usage.total
   state.usageCount += 1
   renderUsage()
 }
@@ -492,21 +462,11 @@ function renderUsage() {
   }
 
   el['usage-foot'].hidden = false
-  el['usage-chip-text'].textContent = formatTokens(usage.total) + ' tok'
-  el['usage-pop-total'].textContent = formatTokens(usage.total) + ' tok'
-
-  const rows = [['提供方 / 模型', usage.provider + ' / ' + usage.model]]
-  if (usage.hasCache) {
-    rows.push(['缓存命中', usage.hitRate === null ? '—' : (usage.hitRate * 100).toFixed(1) + '%'])
-    rows.push(['未缓存输入', formatTokens(usage.miss) + ' tok'])
-    rows.push(['缓存读取', formatTokens(usage.hit) + ' tok'])
-  } else {
-    rows.push(['输入', formatTokens(usage.prompt) + ' tok'])
-  }
-  rows.push(['输出', formatTokens(usage.completion) + ' tok'])
+  el['usage-chip-text'].textContent = usageChipText(usage)
+  el['usage-pop-total'].textContent = usageChipText(usage)
 
   const frag = document.createDocumentFragment()
-  for (const [label, value] of rows) {
+  for (const [label, value] of usageRows(usage)) {
     const row = document.createElement('div')
     row.className = 'usage-row'
     const key = document.createElement('span')
@@ -519,9 +479,7 @@ function renderUsage() {
     frag.appendChild(row)
   }
   el['usage-rows'].replaceChildren(frag)
-
-  el['usage-pop-foot'].textContent =
-    '本次运行累计 ' + state.usageCount + ' 次 / ' + formatTokens(state.usageTotal) + ' tok'
+  el['usage-pop-foot'].textContent = usageFootText(state.usageCount, state.usageTotal)
 }
 
 function isUsagePopOpen() {

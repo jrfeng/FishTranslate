@@ -40,6 +40,7 @@ src/
     storage.js        localStorage 读写封装                         ✅
     constants.js      语言 / 主题 / 存储键 / 默认值                  ✅
     prompt.js         提示词拼装（任务说明 + 术语 + 原文）          ✅
+    usage.js          token 统计与用量文案（纯函数）                  ✅
     store.js          极简响应式 store（下一步）
     tauri.js          invoke 封装（从 app.js 抽出）
   components/
