@@ -422,7 +422,7 @@ function recordUsage(payload) {
   state.usage = usage
   state.usageTotal += usage.total
   state.usageCount += 1
-  renderUsage()
+  renderChrome()
 }
 
 async function copyText(text) {
@@ -1893,6 +1893,10 @@ function render() {
 function renderAll() {
   renderChrome()
   renderTerms()
+}
+
+function renderModels() {
+  syncToolbar()
 }
 
 function renderTerms() {
