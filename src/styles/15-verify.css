@@ -262,7 +262,8 @@ html[data-theme='b'] .verify-dialog {
 }
 
 /* 文本区里的「预览 / 编辑」按钮：只在手机宽度出现 */
-.verify-inline-view {
+.verify-inline-view,
+.verify-inline-hint {
   display: none;
 }
 

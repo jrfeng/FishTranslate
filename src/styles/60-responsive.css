@@ -986,6 +986,22 @@ input,
     display: none;
   }
 
+  /* 文本区左上角的提示文案，和右上角的「预览」同一行 */
+  .verify-inline-hint {
+    display: inline-flex;
+    align-items: center;
+    grid-row: 3;
+    grid-column: 1;
+    align-self: start;
+    justify-self: start;
+    height: 32px;
+    margin: 8px 0 0 20px;
+    z-index: 2;
+    pointer-events: none;
+    color: var(--app-muted);
+    font-size: var(--wa-font-size-xs);
+  }
+
   .verify-inline-view {
     display: inline-flex;
     align-items: center;

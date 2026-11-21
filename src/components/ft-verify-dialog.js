@@ -43,6 +43,7 @@ const TEMPLATE = `
           <textarea id="verify-editor" data-ref="editor" spellcheck="false" placeholder="这里显示识别出的文字，可直接修改。"></textarea>
         </div>
         <div class="verify-preview" id="verify-preview" data-ref="preview" hidden></div>
+        <span class="verify-inline-hint">识别文本 · 改完点「保存」</span>
         <button type="button" class="verify-btn verify-inline-view" data-ref="viewInline" title="切换预览 / 编辑">预览</button>
         <div class="verify-actions" data-ref="actions">
           <button type="button" class="verify-btn verify-abandon" data-ref="abandon">放弃</button>
