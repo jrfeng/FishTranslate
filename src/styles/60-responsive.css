@@ -1157,8 +1157,11 @@ input,
 
   .terms-modal-foot {
     gap: 8px;
-    /* 左边对齐「术语」输入框，右边对齐「译法」输入框 */
+    /* 左边对齐「术语」输入框，右边对齐「译法」输入框；
+       输入行本身有一层内缩，这里补上同样的偏移 */
     justify-content: space-between;
+    padding-left: 30px;
+    padding-right: 30px;
   }
 
   .terms-modal-foot .terms-foot-gap {

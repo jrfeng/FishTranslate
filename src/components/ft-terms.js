@@ -196,10 +196,25 @@ class FtTerms extends FtElement {
     const { source, target } = this.draft()
     if (source.length === 0 || target.length === 0 || this.#maxReached) return
     this.emit('add', { source, target })
-    this.ref('source').value = ''
-    this.ref('target').value = ''
+    // 先把焦点移回「术语」：点按钮会让「译法」失焦，wa-input 可能在 blur 时把旧值写回去，
+    // 所以清空要放在焦点切换之后，并且下一拍再补一次
     this.focusDraft()
+    this.clearDraft()
+    window.setTimeout(() => this.clearDraft(), 0)
     this.updateAddState()
+  }
+
+  /** 同时清掉 wa-input 的属性值与内部 input，避免 blur 后回写 */
+  clearDraft() {
+    for (const key of ['source', 'target']) {
+      const node = this.ref(key)
+      if (node === null) continue
+      node.value = ''
+      const inner = node.shadowRoot !== null && node.shadowRoot !== undefined
+        ? node.shadowRoot.querySelector('input')
+        : node.querySelector('input')
+      if (inner !== null && inner !== undefined) inner.value = ''
+    }
   }
 
   render() {
