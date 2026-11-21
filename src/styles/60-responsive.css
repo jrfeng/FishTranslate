@@ -803,6 +803,8 @@ input,
 
   .mobile-bar {
     display: flex;
+    /* 和上方内容区之间留一段明显的空白 */
+    margin-top: 12px;
   }
 
   /* 弹窗：全屏底部抽屉 */
