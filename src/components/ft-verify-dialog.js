@@ -47,8 +47,14 @@ const TEMPLATE = `
           <button type="button" class="verify-btn verify-abandon" data-ref="abandon">放弃</button>
           <button type="button" class="verify-btn verify-btn-primary" data-ref="saveBottom">保存</button>
         </div>
-        <div class="verify-confirm" data-ref="confirm" hidden>
-          <span>有未保存的修改，确定放弃吗？</span>
+      </div>
+    </div>
+
+    <div class="verify-confirm-overlay" data-ref="confirm" hidden>
+      <div class="verify-confirm" role="dialog" aria-modal="true" aria-labelledby="verify-confirm-title">
+        <div class="verify-confirm-title" id="verify-confirm-title">放弃修改？</div>
+        <div class="verify-confirm-text">有未保存的修改，确定放弃吗？</div>
+        <div class="verify-confirm-actions">
           <button type="button" class="verify-btn" data-ref="keep">继续编辑</button>
           <button type="button" class="verify-btn verify-btn-danger" data-ref="discard">放弃修改</button>
         </div>
@@ -141,6 +147,10 @@ class FtVerifyDialog extends FtElement {
 
     this.ref('keep').addEventListener('click', () => {
       this.ref('confirm').hidden = true
+    })
+    this.ref('confirm').addEventListener('click', (event) => {
+      // 点遮罩空白处等于「继续编辑」
+      if (event.target === this.ref('confirm')) this.ref('confirm').hidden = true
     })
     this.ref('discard').addEventListener('click', () => {
       this.ref('confirm').hidden = true
