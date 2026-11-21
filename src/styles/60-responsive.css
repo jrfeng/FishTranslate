@@ -1066,7 +1066,7 @@ input,
   }
 
   /* 编辑区 */
-  #verify-editor,
+  .verify-edit-wrap,
   .verify-preview {
     grid-row: 3;
     margin: 0 12px;
@@ -1078,6 +1078,12 @@ input,
     border-radius: 12px;
     background: var(--app-panel);
     font-size: 15px;
+  }
+
+  /* 卡片式外壳已经给了内边距，里面的文本区不再重复 */
+  #verify-editor,
+  .verify-hl {
+    padding: 0;
   }
 
   /* 未保存确认：浮在底部操作条上方，不参与网格排版，避免挤压编辑区 */

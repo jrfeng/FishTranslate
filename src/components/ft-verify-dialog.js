@@ -1,5 +1,5 @@
 import { FtElement, define } from '../lib/element.js'
-import { renderMarkdown } from '../lib/markdown.js'
+import { highlightSource, renderMarkdown } from '../lib/markdown.js'
 
 /**
  * <ft-verify-dialog>：校验识别结果弹窗（上图片、下文字）。
@@ -38,7 +38,10 @@ const TEMPLATE = `
             <svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6" /></svg>
           </button>
         </div>
-        <textarea id="verify-editor" data-ref="editor" spellcheck="false" placeholder="这里显示识别出的文字，可直接修改。"></textarea>
+        <div class="verify-edit-wrap" data-ref="editWrap">
+          <pre class="verify-hl" data-ref="hl" aria-hidden="true"></pre>
+          <textarea id="verify-editor" data-ref="editor" spellcheck="false" placeholder="这里显示识别出的文字，可直接修改。"></textarea>
+        </div>
         <div class="verify-preview" id="verify-preview" data-ref="preview" hidden></div>
         <div class="verify-actions" data-ref="actions">
           <button type="button" class="verify-btn verify-abandon" data-ref="abandon">放弃</button>
@@ -112,6 +115,7 @@ class FtVerifyDialog extends FtElement {
     this.#text = String(value ?? '')
     const editor = this.ref('editor')
     if (editor !== null) editor.value = this.#text
+    this.renderHighlight()
   }
 
   onConnect() {
@@ -142,6 +146,11 @@ class FtVerifyDialog extends FtElement {
       this.ref('confirm').hidden = true
       this.finishClose()
     })
+
+    const editor = this.ref('editor')
+    editor.addEventListener('input', () => this.renderHighlight())
+    editor.addEventListener('scroll', () => this.syncEditorScroll())
+    this.renderHighlight()
 
     this.bindStage()
     this.ref('zoomIn').addEventListener('click', () => this.setZoom(this.#zoom * 1.25))
@@ -233,12 +242,15 @@ class FtVerifyDialog extends FtElement {
 
   renderView() {
     const previewing = this.#view === 'preview'
-    this.ref('editor').hidden = previewing
+    this.ref('editWrap').hidden = previewing
     this.ref('preview').hidden = !previewing
     this.ref('view').textContent = previewing ? '编辑' : '预览'
     if (previewing) {
       this.ref('preview').innerHTML =
         '<div class="md">' + renderMarkdown(this.ref('editor').value) + '</div>'
+    } else {
+      this.renderHighlight()
+      this.syncEditorScroll()
     }
   }
 
@@ -267,6 +279,24 @@ class FtVerifyDialog extends FtElement {
 
   emitSave() {
     this.emit('save', { text: this.ref('editor').value })
+  }
+
+  /** 把编辑框内容渲染成 Markdown 高亮（textarea 文字透明，靠这层显示） */
+  renderHighlight() {
+    const hl = this.ref('hl')
+    const editor = this.ref('editor')
+    if (hl === null || editor === null) return
+    hl.innerHTML = highlightSource(editor.value)
+    this.syncEditorScroll()
+  }
+
+  /** 只同步滚动位置，避免滚动时重建高亮层 */
+  syncEditorScroll() {
+    const hl = this.ref('hl')
+    const editor = this.ref('editor')
+    if (hl === null || editor === null) return
+    hl.scrollTop = editor.scrollTop
+    hl.scrollLeft = editor.scrollLeft
   }
 
   render() {

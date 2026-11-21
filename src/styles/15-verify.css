@@ -200,7 +200,22 @@ html[data-theme='b'] .verify-dialog {
   color: var(--wa-color-danger-fill-loud, #c2261a);
 }
 
+.verify-edit-wrap {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* 预览模式下整块隐藏（display:flex 会盖掉 hidden 的 UA 样式） */
+.verify-edit-wrap[hidden] {
+  display: none;
+}
+
 #verify-editor {
+  position: relative;
+  z-index: 1;
   flex: 1 1 auto;
   min-height: 0;
   width: 100%;
@@ -209,6 +224,32 @@ html[data-theme='b'] .verify-dialog {
   border: 0;
   outline: none;
   resize: none;
+  background: transparent;
+  /* 文字由下面的高亮层绘制，这里只留光标和选区 */
+  color: transparent;
+  caret-color: var(--app-text);
+  font-family: var(--wa-font-family-body);
+  font-size: var(--wa-font-size-s);
+  line-height: 1.6;
+}
+
+#verify-editor::selection {
+  color: transparent;
+  background: color-mix(in srgb, var(--app-accent) 26%, transparent);
+}
+
+.verify-hl {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0 12px 10px;
+  border: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
   background: transparent;
   color: var(--app-text);
   font-family: var(--wa-font-family-body);
