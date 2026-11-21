@@ -494,9 +494,19 @@ ft-size-badge {
   display: contents;
 }
 
-/* 原文卡片组件同样不产生盒子 */
-ft-source-card {
-  display: contents;
+/* 原文 / 译文卡片：宿主自己当 flex 容器，卡片在其中撑满高度 */
+ft-source-card,
+ft-output-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+ft-source-card > .card,
+ft-output-card > .card {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .head {
