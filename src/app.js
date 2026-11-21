@@ -86,6 +86,7 @@ import './components/ft-settings-sheet.js'
 import './components/ft-terms.js'
 import './components/ft-source-editor.js'
 import './components/ft-size-badge.js'
+import './components/ft-verify-dialog.js'
 
 const config = { apiKey: '', baseURL: DEFAULT_BASE_URL, model: DEFAULT_MODEL }
 
@@ -190,22 +191,7 @@ for (const id of [
   'image-zoom-icon',
   'image-refresh',
   'toast-stack',
-  'verify-overlay',
-  'verify-image',
-  'verify-stage',
-  'zoom-in',
-  'zoom-out',
-  'zoom-reset',
-  'zoom-value',
-  'verify-editor',
-  'verify-confirm',
-  'verify-save',
-  'verify-close',
-  'verify-view',
-  'verify-expand',
-  'verify-abandon',
-  'verify-save-bottom',
-  'verify-preview',
+  'verify-dialog',
   'confirm-keep',
   'confirm-discard',
   'win-min',
@@ -1381,95 +1367,9 @@ function bind() {
   el['image-zoom'].addEventListener('click', () => void openVerify())
   el['image-zoom-icon'].addEventListener('click', () => void openVerify())
 
-  el['verify-overlay'].addEventListener('click', (event) => {
-    if (event.target === el['verify-overlay']) closeVerify()
+  el['verify-dialog'].addEventListener('save', (event) => {
+    saveVerifyText(event.detail.text)
   })
-  el['verify-save'].addEventListener('click', saveVerify)
-  el['verify-close'].addEventListener('click', () => closeVerify())
-  el['verify-abandon'].addEventListener('click', () => closeVerify())
-  el['verify-save-bottom'].addEventListener('click', saveVerify)
-  el['verify-expand'].addEventListener('click', () => {
-    const stage = el['verify-stage']
-    const full = stage.classList.toggle('is-full')
-    el['verify-expand'].textContent = full ? '⤢ 收起' : '⤢ 放大'
-  })
-
-  el['verify-view'].addEventListener('click', () => {
-    verifyView = verifyView === 'preview' ? 'edit' : 'preview'
-    renderVerifyView()
-    if (verifyView === 'edit') el['verify-editor'].focus()
-  })
-  el['confirm-keep'].addEventListener('click', () => {
-    el['verify-confirm'].hidden = true
-  })
-  el['confirm-discard'].addEventListener('click', () => {
-    el['verify-confirm'].hidden = true
-    closeVerify(true)
-  })
-
-  /* 图片区域：滚轮缩放 + 拖拽平移（缩放控件与关闭按钮上的操作不参与） */
-  const stage = el['verify-stage']
-  const isStageControl = (target) =>
-    target instanceof Element &&
-    target.closest('.verify-zoom, .verify-head-close, .verify-expand') !== null
-
-  stage.addEventListener(
-    'wheel',
-    (event) => {
-      if (isStageControl(event.target)) return
-      event.preventDefault()
-      const rect = stage.getBoundingClientRect()
-      const originX = event.clientX - rect.left - rect.width / 2
-      const originY = event.clientY - rect.top - rect.height / 2
-      const factor = event.deltaY < 0 ? 1.12 : 1 / 1.12
-      setVerifyZoom(verifyZoom * factor, originX, originY)
-    },
-    { passive: false },
-  )
-
-  let dragging = false
-  let dragStartX = 0
-  let dragStartY = 0
-  let panStartX = 0
-  let panStartY = 0
-
-  stage.addEventListener('pointerdown', (event) => {
-    if (event.button !== 0) return
-    // 点控件时不要抢指针，否则 setPointerCapture 会让按钮收不到 click
-    if (isStageControl(event.target)) return
-    dragging = true
-    dragStartX = event.clientX
-    dragStartY = event.clientY
-    panStartX = verifyPanX
-    panStartY = verifyPanY
-    stage.classList.add('is-dragging')
-    stage.setPointerCapture?.(event.pointerId)
-  })
-
-  stage.addEventListener('pointermove', (event) => {
-    if (!dragging) return
-    verifyPanX = panStartX + (event.clientX - dragStartX)
-    verifyPanY = panStartY + (event.clientY - dragStartY)
-    applyVerifyTransform()
-  })
-
-  const endDrag = (event) => {
-    if (!dragging) return
-    dragging = false
-    stage.classList.remove('is-dragging')
-    stage.releasePointerCapture?.(event.pointerId)
-  }
-
-  stage.addEventListener('pointerup', endDrag)
-  stage.addEventListener('pointercancel', endDrag)
-  stage.addEventListener('dblclick', (event) => {
-    if (isStageControl(event.target)) return
-    resetVerifyZoom()
-  })
-
-  el['zoom-in'].addEventListener('click', () => setVerifyZoom(verifyZoom * 1.25))
-  el['zoom-out'].addEventListener('click', () => setVerifyZoom(verifyZoom / 1.25))
-  el['zoom-reset'].addEventListener('click', resetVerifyZoom)
 
   el['image-thumb'].addEventListener('load', () => {
     if (state.image === null) return
@@ -1902,97 +1802,28 @@ function clearImage() {
   renderChrome()
 }
 
-/** 校验弹窗里图片的缩放/平移状态 */
-let verifyZoom = 1
-let verifyPanX = 0
-let verifyPanY = 0
-
-function applyVerifyTransform() {
-  el['verify-image'].style.transform =
-    'translate(' + verifyPanX + 'px, ' + verifyPanY + 'px) scale(' + verifyZoom + ')'
-  el['zoom-value'].textContent = Math.round(verifyZoom * 100) + '%'
-}
-
-/** 以 (originX, originY) 为中心缩放，坐标是相对舞台中心的偏移 */
-function setVerifyZoom(next, originX = 0, originY = 0) {
-  const clamped = Math.min(8, Math.max(0.2, next))
-  const ratio = clamped / verifyZoom
-  verifyPanX = originX - (originX - verifyPanX) * ratio
-  verifyPanY = originY - (originY - verifyPanY) * ratio
-  verifyZoom = clamped
-  applyVerifyTransform()
-}
-
-function resetVerifyZoom() {
-  verifyZoom = 1
-  verifyPanX = 0
-  verifyPanY = 0
-  applyVerifyTransform()
-}
-
-/** 校验弹窗的编辑 / 预览模式 */
-let verifyView = 'edit'
-
-function renderVerifyView() {
-  const previewing = verifyView === 'preview'
-  el['verify-editor'].hidden = previewing
-  el['verify-preview'].hidden = !previewing
-  el['verify-view'].textContent = previewing ? '编辑' : '预览'
-  if (previewing) {
-    el['verify-preview'].innerHTML = '<div class="md">' + renderMarkdown(el['verify-editor'].value) + '</div>'
-  }
-}
-
 /** 打开校验弹窗：整页大小的浮层，上面看图片、下面改文字 */
 function openVerify() {
   // 识别中直接忽略，避免打开一个空弹窗
   if (state.ocrBusy) return
-  resetVerifyStage()
   if (state.image === null) return
-  el['verify-image'].src = state.image.dataUrl
-  el['verify-editor'].value = state.input
-  el['verify-confirm'].hidden = true
-  el['verify-overlay'].hidden = false
-  verifyView = 'preview'
-  renderVerifyView()
-  resetVerifyZoom()
+  const dialog = el['verify-dialog']
+  if (dialog === null || dialog === undefined) return
+  dialog.text = state.input
+  dialog.imageSrc = state.image.dataUrl
+  dialog.open = true
 }
 
-/** 弹窗里的文字有没有改过 */
-function verifyDirty() {
-  return !el['verify-overlay'].hidden && el['verify-editor'].value !== state.input
-}
-
-function resetVerifyStage() {
-  const stage = el['verify-stage']
-  if (stage === null || stage === undefined) return
-  stage.classList.remove('is-full')
-  if (el['verify-expand'] !== null && el['verify-expand'] !== undefined) {
-    el['verify-expand'].textContent = '⤢ 放大'
-  }
-}
-
-function closeVerify(force = false) {
-  if (el['verify-overlay'].hidden) return
-  if (!force && verifyDirty()) {
-    el['verify-confirm'].hidden = false
-    return
-  }
-  el['verify-overlay'].hidden = true
-  el['verify-confirm'].hidden = true
-  el['verify-image'].removeAttribute('src')
-}
-
-/** 保存弹窗里的文字到输入框，然后关闭 */
-function saveVerify() {
-  const text = el['verify-editor'].value
+/** 弹窗里确认保存后，把文字写回输入框 */
+function saveVerifyText(text) {
   if (text !== state.input) {
     state.input = text
     el.source.value = text
     syncHighlight()
     render()
   }
-  closeVerify(true)
+  const dialog = el['verify-dialog']
+  if (dialog !== null && dialog !== undefined) dialog.open = false
 }
 
 /** 错误信息里出现这些英文原文时，统一翻成中文给用户看 */
