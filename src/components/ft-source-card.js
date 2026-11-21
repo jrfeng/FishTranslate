@@ -50,6 +50,63 @@ const TEMPLATE = `
 
 class FtSourceCard extends FtElement {
   static template = TEMPLATE
+
+  #inputLength = 0
+  #hasImage = false
+  #loading = false
+  #ocrBusy = false
+  #termsCount = 0
+  #immediate = false
+
+  get inputLength() { return this.#inputLength }
+  set inputLength(value) { this.#inputLength = Number(value) || 0; this.render() }
+
+  get hasImage() { return this.#hasImage }
+  set hasImage(value) { this.#hasImage = Boolean(value); this.render() }
+
+  get loading() { return this.#loading }
+  set loading(value) { this.#loading = Boolean(value); this.render() }
+
+  get ocrBusy() { return this.#ocrBusy }
+  set ocrBusy(value) { this.#ocrBusy = Boolean(value); this.render() }
+
+  get termsCount() { return this.#termsCount }
+  set termsCount(value) { this.#termsCount = Number(value) || 0; this.render() }
+
+  get immediate() { return this.#immediate }
+  set immediate(value) { this.#immediate = Boolean(value); this.render() }
+
+  render() {
+    const count = this.#inputLength + ' 字符'
+    const countEl = this.querySelector('#char-count')
+    const countHead = this.querySelector('#char-count-head')
+    if (countEl !== null) countEl.textContent = count
+    if (countHead !== null) countHead.textContent = count
+
+    const translate = this.querySelector('#translate')
+    if (translate !== null) {
+      translate.disabled = this.#inputLength === 0 || this.#loading || this.#ocrBusy
+      translate.textContent = this.#loading ? '翻译中…' : '翻译'
+    }
+
+    const clear = this.querySelector('#clear')
+    const clearDisabled = (this.#inputLength === 0 && !this.#hasImage) || this.#ocrBusy
+    if (clear !== null) clear.disabled = clearDisabled
+    const clearIcon = this.querySelector('#clear-icon')
+    if (clearIcon !== null) clearIcon.disabled = clearDisabled
+
+    for (const selector of ['#immediate', '#immediate-icon']) {
+      const node = this.querySelector(selector)
+      if (node === null) continue
+      node.setAttribute('aria-checked', String(this.#immediate))
+      node.classList.toggle('on', this.#immediate)
+    }
+
+    const label = this.querySelector('#terms-icon-label')
+    if (label !== null) label.textContent = '术语 ' + this.#termsCount + ' 条'
+    const mobileLabel = document.getElementById('mobile-terms-label')
+    if (mobileLabel !== null) mobileLabel.textContent = '术语 ' + this.#termsCount
+  }
 }
 
 define('ft-source-card', FtSourceCard)

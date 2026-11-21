@@ -217,6 +217,7 @@ for (const id of [
   'terms-icon',
   'terms-icon-label',
   'clear-icon',
+  'source-card',
   'output-card',
   'ctx-menu',
   'app-version',
@@ -315,10 +316,16 @@ function isStale() {
 function renderChrome() {  const loading = state.phase === 'loading'
   const ocrBusy = state.ocrBusy
 
-  el.translate.disabled = state.input.trim().length === 0 || loading || ocrBusy
-  el.translate.textContent = loading ? '翻译中…' : '翻译'
-  el.clear.disabled = (state.input.length === 0 && state.image === null) || ocrBusy
-  el['clear-icon'].disabled = el.clear.disabled
+  const sourceCard = el['source-card']
+  if (sourceCard !== null && sourceCard !== undefined) {
+    sourceCard.inputLength = state.input.length
+    sourceCard.hasImage = state.image !== null
+    sourceCard.loading = loading
+    sourceCard.ocrBusy = ocrBusy
+    sourceCard.termsCount = state.terms.length
+    sourceCard.immediate = state.immediate
+  }
+
   el['pick-image'].hidden = !usesDeepSeekEndpoint()
   el['pick-image'].disabled = ocrBusy || loading
   // 非 DeepSeek 地址没有余额接口
@@ -344,10 +351,6 @@ function renderChrome() {  const loading = state.phase === 'loading'
       state.image.width > 0 ? state.image.width + ' × ' + state.image.height : ''
   }
 
-  el['char-count'].textContent = state.input.length + ' 字符'
-  if (el['char-count-head'] !== null && el['char-count-head'] !== undefined) {
-    el['char-count-head'].textContent = state.input.length + ' 字符'
-  }
   el['ocr-progress'].hidden = !ocrBusy
 
   const outputCard = el['output-card']
@@ -367,19 +370,10 @@ function renderChrome() {  const loading = state.phase === 'loading'
   syncIconButtons()
   syncMoreUi()
 
-  el['immediate'].setAttribute('aria-checked', String(state.immediate))
-  el['immediate'].classList.toggle('on', state.immediate)
-  el['immediate-icon'].setAttribute('aria-checked', String(state.immediate))
-  el['immediate-icon'].classList.toggle('on', state.immediate)
 
 
   // 卡片图标按钮的 hover 提示
   el['terms-icon'].dataset.tip = '术语 ' + state.terms.length + ' 条'
-  el['terms-icon-label'].textContent = '术语 ' + state.terms.length + ' 条'
-  if (el['mobile-terms-label'] !== null && el['mobile-terms-label'] !== undefined) {
-    el['mobile-terms-label'].textContent = '术语 ' + state.terms.length
-    el['mobile-translate'].disabled = el.translate.disabled
-  }
   el['immediate-icon'].dataset.tip = state.immediate ? '粘贴后翻译：开' : '粘贴后翻译：关'
   el['clear-icon'].dataset.tip = '清除'
   el['image-zoom-icon'].dataset.tip = '校验识别结果'
@@ -2169,6 +2163,7 @@ renderThemeSelect()
 renderLangSelects()
 el.source.value = state.input
 bind()
+window.__fishAppBound = true
 renderAll()
 syncHighlight()
 if (config.apiKey.length > 0) {
