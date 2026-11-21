@@ -88,6 +88,28 @@ for (const match of appSource.matchAll(/el\['([\w-]+)'\]/g)) {
   }
 }
 
+// ---------------------------------------------------------------- 3) CSS 引用了不存在的 id
+const styleDir = join(root, 'src', 'styles')
+const styleFiles = readdirSync(styleDir).filter((name) => name.endsWith('.css'))
+const cssIds = new Map()
+for (const file of styleFiles) {
+  const source = readFileSync(join(styleDir, file), 'utf8')
+  for (const match of source.matchAll(/#([A-Za-z][\w-]*)/g)) {
+    const id = match[1]
+    // 跳过 #fff、#e9e9ef 这类颜色值
+    if (/^[0-9a-fA-F]{3,8}$/.test(id)) continue
+    if (!cssIds.has(id)) cssIds.set(id, file)
+  }
+}
+
+// 运行时由 JS 创建、CSS 里正常引用的 id
+const runtimeIds = new Set(['fatal-error', 'boot-cover', 'size-badge'])
+
+for (const [id, file] of cssIds) {
+  if (ids.has(id) || componentIds.has(id) || runtimeIds.has(id)) continue
+  problems.push(`样式 ${file} 引用了不存在的元素 id：${id}`)
+}
+
 // ---------------------------------------------------------------- 结果
 if (problems.length === 0) {
   console.log('检查通过：没有未定义函数，组件标签与 id 引用一致。')

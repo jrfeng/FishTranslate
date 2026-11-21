@@ -25,20 +25,20 @@ const TEMPLATE = `
           <button type="button" class="verify-zoom-btn" data-ref="zoomOut" title="缩小">−</button>
           <span class="verify-zoom-value" data-ref="zoomValue">100%</span>
           <button type="button" class="verify-zoom-btn" data-ref="zoomIn" title="放大">＋</button>
-          <button type="button" class="verify-zoom-btn" data-ref="zoomReset" title="还原">重置</button>
+          <button type="button" class="verify-zoom-btn" id="zoom-reset" data-ref="zoomReset" title="还原">重置</button>
         </div>
       </div>
       <div class="verify-panel">
         <div class="verify-head">
           <span class="verify-head-hint">识别文本 · 改完点「确认」</span>
           <span class="verify-head-title">校验识别结果</span>
-          <button type="button" class="verify-btn" data-ref="view" title="切换预览 / 编辑">预览</button>
-          <button type="button" class="verify-btn verify-btn-primary" data-ref="save">确认</button>
+          <button type="button" class="verify-btn" id="verify-view" data-ref="view" title="切换预览 / 编辑">预览</button>
+          <button type="button" class="verify-btn verify-btn-primary" id="verify-save" data-ref="save">确认</button>
           <button type="button" class="verify-head-close" data-ref="close" title="关闭" aria-label="关闭">
             <svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6" /></svg>
           </button>
         </div>
-        <textarea data-ref="editor" spellcheck="false" placeholder="这里显示识别出的文字，可直接修改。"></textarea>
+        <textarea id="verify-editor" data-ref="editor" spellcheck="false" placeholder="这里显示识别出的文字，可直接修改。"></textarea>
         <div class="verify-preview" id="verify-preview" data-ref="preview" hidden></div>
         <div class="verify-actions" data-ref="actions">
           <button type="button" class="verify-btn verify-abandon" data-ref="abandon">放弃</button>
