@@ -59,12 +59,20 @@ class FtSourceEditor extends FtElement {
     this.applyHighlight()
   }
 
-  /** 写高亮并保持滚动位置一致 */
+  /** 写高亮（只在内容变化时调用），并同步一次滚动位置 */
   applyHighlight() {
     const hl = this.ref('hl')
     const source = this.ref('source')
     if (hl === null || source === null) return
     hl.innerHTML = this.#highlight
+    this.syncScroll()
+  }
+
+  /** 只同步滚动位置：滚动时绝不能重建高亮层，否则会清空已渲染的内容 */
+  syncScroll() {
+    const hl = this.ref('hl')
+    const source = this.ref('source')
+    if (hl === null || source === null) return
     hl.scrollTop = source.scrollTop
     hl.scrollLeft = source.scrollLeft
   }
@@ -80,7 +88,7 @@ class FtSourceEditor extends FtElement {
       this.#value = source.value
       this.emit('input', source.value)
     })
-    source.addEventListener('scroll', () => this.applyHighlight())
+    source.addEventListener('scroll', () => this.syncScroll())
     this.ref('pick').addEventListener('click', () => this.emit('pick-image'))
   }
 }
