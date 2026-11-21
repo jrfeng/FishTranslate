@@ -736,6 +736,7 @@ function contextRegion(event) {
   for (const node of path) {
     if (node === null || node === undefined) continue
     if (node.id === 'source') return 'source'
+    if (node.id === 'verify-editor') return 'verify'
     if (
       node.id === 'image-preview' ||
       node.id === 'image-thumb' ||
@@ -798,7 +799,7 @@ function buildContextItems(region, event) {
   const input = contextInputElement(event)
   const items = []
 
-  if (region === 'source' && input instanceof HTMLTextAreaElement) {
+  if ((region === 'source' || region === 'verify') && input instanceof HTMLTextAreaElement) {
     const hasSelection = selectionOf(input).length > 0
     items.push({
       label: '剪切',
@@ -842,12 +843,15 @@ function buildContextItems(region, event) {
         input.select()
       },
     })
-    items.push({
-      label: '图片翻译',
-      run: () => {
-        el['image-input'].click()
-      },
-    })
+    // 「图片翻译」只属于原文框；校验弹窗里再放一个只会让人困惑
+    if (region === 'source') {
+      items.push({
+        label: '图片翻译',
+        run: () => {
+          el['image-input'].click()
+        },
+      })
+    }
     return items
   }
 
