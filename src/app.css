@@ -484,6 +484,11 @@ ft-terms {
   display: contents;
 }
 
+/* 原文编辑区组件同样让内部 .editor 直接参与卡片布局 */
+ft-source-editor {
+  display: contents;
+}
+
 .head {
   display: flex;
   align-items: center;

@@ -87,28 +87,7 @@
               <div class="progress-line" id="ocr-progress" hidden aria-hidden="true">
                 <span class="progress-line-runner"></span>
               </div>
-              <div class="editor">
-                <pre class="hl" id="hl" aria-hidden="true"></pre>
-                <textarea
-                  class="input"
-                  id="source"
-                  spellcheck="false"
-                  placeholder="在这里输入或粘贴要翻译的文本…"
-                ></textarea>
-                <wa-button id="pick-image" class="pick-image-fab" appearance="outlined" size="s" title="从本地选一张图片，识别文字后翻译" aria-label="从本地选一张图片">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                    <circle cx="9" cy="9" r="2" />
-                    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                  </svg>
-                </wa-button>
-                <input
-                  type="file"
-                  id="image-input"
-                  accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,image/tiff"
-                  hidden
-                />
-              </div>
+              <ft-source-editor id="source-editor"></ft-source-editor>
               <div class="card-foot">
                 <span class="count" id="char-count">0 字符</span>
               </div>

@@ -45,6 +45,7 @@ import './components/ft-icon-menu.js'
 import './components/ft-toolbar.js'
 import './components/ft-settings-sheet.js'
 import './components/ft-terms.js'
+import './components/ft-source-editor.js'
 
 const MAX_TERMS = 50
 const COPIED_MS = 1600
@@ -1021,9 +1022,12 @@ function syncHighlight() {
   if (highlightFrame !== 0) return
   highlightFrame = window.requestAnimationFrame(() => {
     highlightFrame = 0
+    const editor = el['source-editor']
+    if (editor !== null && editor !== undefined) {
+      editor.highlightHtml = highlightSource(state.input)
+      return
+    }
     el.hl.innerHTML = highlightSource(state.input)
-    el.hl.scrollTop = el.source.scrollTop
-    el.hl.scrollLeft = el.source.scrollLeft
   })
 }
 
@@ -1863,11 +1867,6 @@ function bind() {
     }
 
     renderChrome()
-  })
-
-  el.source.addEventListener('scroll', () => {
-    el.hl.scrollTop = el.source.scrollTop
-    el.hl.scrollLeft = el.source.scrollLeft
   })
 
   // 勾选「粘贴后翻译」后，粘贴完成即触发一次翻译；粘贴图片时走 OCR
