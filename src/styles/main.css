@@ -1,0 +1,13 @@
+/* 样式入口：按原 app.css 的顺序汇总，构建时由 esbuild 内联 */
+@import './00-base.css';
+@import './10-cards.css';
+@import './15-verify.css';
+@import './20-settings.css';
+@import './25-layout.css';
+@import './30-editor.css';
+@import './35-terms.css';
+@import './40-output.css';
+@import './45-debug-menu.css';
+@import './50-markdown.css';
+@import './55-progress-dialogs.css';
+@import './60-responsive.css';

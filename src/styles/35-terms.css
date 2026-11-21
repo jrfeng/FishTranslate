@@ -1,0 +1,216 @@
+/* 术语面板 —— 从原 app.css 按原顺序切出，规则未改动 */
+
+/* ---------------------------------------------------------------- 术语 */
+
+/* 术语弹窗（窄窗口专用） */
+.terms-modal {
+  width: 520px;
+}
+
+.modal-count {
+  font-size: var(--wa-font-size-xs);
+  color: var(--app-muted);
+  font-weight: 400;
+}
+
+.terms-modal-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: 320px;
+  overflow: auto;
+}
+
+.terms-modal .terms-add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 16px 10px;
+}
+
+.terms-modal .terms-add .term-field {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.terms-modal .terms-list {
+  padding: 0 10px 8px;
+}
+
+.terms-modal-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.terms-foot-gap {
+  flex: 1 1 auto;
+}
+
+/* 窄窗口的术语入口（≤768）：和普通描边按钮同一套视觉 */
+.terms-trigger {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+  height: 42px;
+  padding: 0 12px;
+  border: var(--app-line) solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-panel);
+  color: var(--app-text);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.terms-trigger:hover {
+  background: var(--app-panel-2);
+}
+
+.terms-trigger:active {
+  background: var(--app-panel-2);
+}
+
+.terms-badge {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: calc(var(--app-radius-sm) / 2);
+  background: var(--app-panel-2);
+  color: var(--app-muted);
+}
+
+.terms-badge svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 与卡片标题（原文 / 译文）保持同一套字号和颜色 */
+.terms-label {
+  flex: 0 0 auto;
+  font-size: var(--wa-font-size-xs);
+  font-weight: var(--app-label-weight);
+  letter-spacing: 0.06em;
+  color: var(--app-muted);
+}
+
+.terms-go {
+  margin-left: auto;
+  font-size: var(--wa-font-size-xs);
+  font-weight: 400;
+  color: var(--app-muted);
+}
+
+/* 像素风主题：方角 + 硬阴影，和面板一致 */
+html[data-theme='c'] .terms-trigger,
+html[data-theme='d'] .terms-trigger {
+  box-shadow: var(--app-shadow);
+}
+
+.terms-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  padding: 12px 14px;
+}
+
+.terms-add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.term-field {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.term-join {
+  flex: 0 0 auto;
+  font-size: var(--wa-font-size-xs);
+  color: var(--app-muted);
+  white-space: nowrap;
+}
+
+.terms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 104px;
+  overflow: auto;
+}
+
+.terms-empty {
+  font-size: var(--wa-font-size-xs);
+  color: var(--app-muted);
+}
+
+.term {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 4px 4px 6px;
+  border-radius: var(--app-radius-sm);
+  background: var(--app-panel-2);
+}
+
+html[data-theme='a'] .term {
+  background: #1c1c22;
+}
+
+html[data-theme='c'] .term {
+  border: 2px solid #101010;
+  border-radius: 4px;
+  background: var(--app-panel-2);
+}
+
+/* 原文/译文各自一个浅色小块，方便区分 */
+.term-token {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 1px 7px;
+  border: var(--app-line) solid var(--app-token-border);
+  border-radius: 4px;
+  background: var(--app-token-bg);
+  color: var(--app-text);
+  font-size: var(--wa-font-size-xs);
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.term-arrow {
+  flex: 0 0 auto;
+  font-size: var(--wa-font-size-xs);
+  color: var(--app-muted);
+}
+
+.term-remove {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 2px 8px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--app-muted);
+  font-family: inherit;
+  font-size: var(--wa-font-size-s);
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.term-remove:hover {
+  color: var(--wa-color-danger-fill-loud, #c2261a);
+  background: var(--app-panel);
+}

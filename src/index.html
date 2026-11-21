@@ -33,241 +33,44 @@
 
       <div class="workspace">
         <header class="head">
-          <div class="lang-pair">
-            <span class="field-label">原文</span>
-            <wa-select id="source-lang" size="s" appearance="outlined" class="lang-select" title="选择原文语言"></wa-select>
-            <span class="lang-arrow" aria-hidden="true">→</span>
-            <span class="field-label">译文</span>
-            <wa-select id="target-lang" size="s" appearance="outlined" class="lang-select" title="选择译文语言"></wa-select>
-          </div>
-          <div class="head-model">
-            <span class="field-label">模型</span>
-            <wa-select id="model-select" size="s" appearance="outlined" class="model-select" title="选择翻译使用的模型"></wa-select>
-            <button type="button" class="icon-btn" id="model-icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="选择模型">
-              <svg viewBox="0 0 16 16" aria-hidden="true">
-                <path d="M8 2 14 5.2 8 8.4 2 5.2z" />
-                <path d="M2 8.2 8 11.4 14 8.2" />
-                <path d="M2 11.2 8 14.4 14 11.2" />
-              </svg>
-            </button>
-            <div class="icon-menu" id="model-menu" role="menu" hidden></div>
-          </div>
-          <div class="head-tools">
-            <span class="field-label">主题</span>
-            <wa-select id="theme-select" size="s" appearance="outlined" class="theme-select" title="切换界面主题"></wa-select>
-            <button type="button" class="icon-btn" id="theme-icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="切换界面主题">
-              <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.6" /></svg>
-            </button>
-            <div class="icon-menu" id="theme-menu" role="menu" hidden></div>
-            <span class="settings-wrap">
-              <wa-button id="settings-toggle" appearance="plain" size="s">设置</wa-button>
-              <button type="button" class="icon-btn" id="settings-icon-btn" aria-label="设置">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg>
-              </button>
+          <ft-toolbar id="toolbar"></ft-toolbar>
+          <span class="toolbar-divider" id="balance-divider" hidden aria-hidden="true"></span>
+          <span class="balance-wrap" id="balance-wrap" hidden>
+            <wa-tag id="balance" variant="brand" size="s">余额</wa-tag>
+            <span class="progress-line balance-progress" id="balance-progress" hidden>
+              <span class="progress-line-runner"></span>
             </span>
-            <button type="button" class="icon-btn more-btn" id="more-btn" aria-haspopup="true" aria-expanded="false" aria-label="更多"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.4" cy="8" r="1.1" fill="currentColor" stroke="none" /><circle cx="8" cy="8" r="1.1" fill="currentColor" stroke="none" /><circle cx="12.6" cy="8" r="1.1" fill="currentColor" stroke="none" /></svg></button>
-            <div class="more-menu" id="more-menu" role="menu" hidden></div>
-            <span class="toolbar-divider" id="balance-divider" hidden aria-hidden="true"></span>
-            <span class="balance-wrap" id="balance-wrap" hidden>
-              <wa-tag id="balance" variant="brand" size="s">余额</wa-tag>
-              <span class="progress-line balance-progress" id="balance-progress" hidden>
-                <span class="progress-line-runner"></span>
-              </span>
-            </span>
-          </div>
+          </span>
         </header>
 
         <script src="/boot-body.js"></script>
 
-        <div class="modal-overlay" id="settings" hidden>
-          <div class="modal settings-modal" role="dialog" aria-modal="true" aria-label="设置">
-            <div class="modal-head">
-              <span class="modal-title">设置</span>
-              <button type="button" class="modal-close" id="settings-x" title="关闭" aria-label="关闭">
-                <svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6" /></svg>
-              </button>
-            </div>
-            <div class="settings-form">
-              <div class="field">
-                <span class="field-label">API Key</span>
-                <wa-input id="api-key" type="text" size="s" appearance="outlined" placeholder="sk-…" class="field-key is-secret" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></wa-input>
-                <span class="field-hint">只保存在本机。</span>
-              </div>
-              <div class="field">
-                <div class="label-row">
-                  <span class="field-label">接口地址</span>
-                  <span class="model-status" id="model-status" hidden>
-                    <svg class="status-icon icon-ok" viewBox="0 0 12 12" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M2 6.4 4.8 9 10 3.2" />
-                    </svg>
-                    <svg class="status-icon icon-fail" viewBox="0 0 12 12" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M3 3l6 6M9 3l-6 6" />
-                    </svg>
-                    <svg class="status-icon icon-loading" viewBox="0 0 12 12" fill="none" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
-                      <circle cx="6" cy="6" r="4.6" class="spinner-track" />
-                      <path d="M6 1.4a4.6 4.6 0 0 1 4.6 4.6" class="spinner-arc" />
-                    </svg>
-                    <span class="status-text" id="model-status-text"></span>
-                  </span>
-                </div>
-                <wa-input id="base-url" size="s" appearance="outlined" class="field-url" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></wa-input>
-                <span class="field-hint">默认 DeepSeek 官方地址；换成第三方地址时，图片识别与余额不可用。</span>
-              </div>
-            </div>
-            <div class="modal-foot">
-              <wa-button id="save-settings" variant="brand" size="s">保存并读取模型</wa-button>
-            </div>
-          </div>
-        </div>
-  <div class="modal-overlay" id="terms-modal" hidden>
-    <div class="modal terms-modal" role="dialog" aria-modal="true" aria-label="术语">
-      <div class="modal-head">
-        <span class="modal-title">术语</span>
-        <span class="modal-count" id="terms-modal-count">0 条</span>
-        <button type="button" class="modal-close" id="terms-x" title="关闭" aria-label="关闭">
-          <svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6" /></svg>
-        </button>
-      </div>
-      <div class="terms-modal-body" id="terms-modal-body"></div>
-      <div class="modal-foot terms-modal-foot">
-        <wa-button id="terms-clear-modal" variant="warning" appearance="plain" size="s" disabled>清空全部</wa-button>
-        <span class="terms-foot-gap"></span>
-        <wa-button id="term-add-foot" variant="brand" size="s" disabled>添加</wa-button>
-        <wa-button id="terms-done" variant="brand" size="s">完成</wa-button>
-      </div>
-    </div>
-  </div>
+        <ft-settings-sheet id="settings-sheet"></ft-settings-sheet>
+
+  <ft-size-badge></ft-size-badge>
+  
 
 
         <main class="grid">
           <section class="col">
-            <section class="card card-grow">
-              <div class="card-head">
-                <span class="card-title">原文</span>
-                <span class="count card-count-head" id="char-count-head">0 字符</span>
-                <div class="card-meta">
-                  <button type="button" class="card-icon-btn with-label" id="terms-icon" title="术语"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 7.2V3.5a1 1 0 0 1 1-1h3.7a1 1 0 0 1 .7.3l5.3 5.3a1 1 0 0 1 0 1.4l-3.7 3.7a1 1 0 0 1-1.4 0L2.8 7.9a1 1 0 0 1-.3-.7z" /><circle cx="5.6" cy="5.6" r=".9" /></svg><span class="card-icon-label" id="terms-icon-label">术语 0 条</span></button>
-                  <button type="button" class="card-icon-btn" id="immediate-icon" role="switch" aria-checked="false" title="粘贴后翻译"><svg viewBox="0 0 24 24" aria-hidden="true"><text x="12" y="14.4" font-size="13" font-family="Microsoft YaHei, sans-serif" text-anchor="middle" fill="currentColor" font-weight="700">译</text><text x="12" y="21.2" font-size="5.6" font-family="Arial, sans-serif" text-anchor="middle" fill="currentColor" font-weight="700" letter-spacing="0.2">AUTO</text></svg></button>
-                  <button type="button" class="card-icon-btn" id="clear-icon" title="清除原文"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M20 5.91406H28V13.9141H43V21.9141H5V13.9141H20V5.91406Z" /><path d="M8 40H40V22H8V40Z" /><path d="M16 39.8976V33.9141" /><path d="M24 39.8977V33.8977" /><path d="M32 39.8976V33.9141" /><path d="M12 40H36" /></svg></button>
-                  <button type="button" class="toggle" id="immediate" role="switch" aria-checked="false" title="开启后，粘贴文本即自动翻译">
-                    <span class="toggle-dot" aria-hidden="true"></span>
-                    <span class="toggle-text">粘贴后翻译</span>
-                  </button>
-                  <wa-button id="clear" appearance="plain" size="s">清除</wa-button>
-                  <wa-button id="translate" variant="brand" size="s">翻译</wa-button>
-                </div>
-              </div>
-              <div class="image-preview" id="image-preview" hidden>
-                <img class="image-thumb" id="image-thumb" alt="待识别的图片" title="点击校验" />
-                <div class="image-meta">
-                  <span class="image-name" id="image-name"></span>
-                  <span class="image-size" id="image-size"></span>
-                </div>
-                <wa-button id="image-refresh" class="image-refresh-btn" appearance="plain" size="s" title="重新识别这张图片" aria-label="重新识别这张图片">
-                  <svg class="image-refresh-icon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
-                    <path d="M21 3v5h-5" />
-                  </svg>
-                </wa-button>
-                <button type="button" class="image-strip-icon" id="image-zoom-icon" title="校验识别结果" aria-label="校验识别结果"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5.6A1.6 1.6 0 0 1 5.6 4H9" /><path d="M15 4h3.4A1.6 1.6 0 0 1 20 5.6V9" /><path d="M20 15v3.4a1.6 1.6 0 0 1-1.6 1.6H15" /><path d="M9 20H5.6A1.6 1.6 0 0 1 4 18.4V15" /><path d="m8.4 12 2.4 2.4 4.8-4.8" /></svg></button>
-                  <wa-button id="image-zoom" appearance="outlined" size="s" title="放大图片，核对识别结果">校验</wa-button>
-              </div>
-              <div class="progress-line" id="ocr-progress" hidden aria-hidden="true">
-                <span class="progress-line-runner"></span>
-              </div>
-              <div class="editor">
-                <pre class="hl" id="hl" aria-hidden="true"></pre>
-                <textarea
-                  class="input"
-                  id="source"
-                  spellcheck="false"
-                  placeholder="在这里输入或粘贴要翻译的文本…"
-                ></textarea>
-                <wa-button id="pick-image" class="pick-image-fab" appearance="outlined" size="s" title="从本地选一张图片，识别文字后翻译" aria-label="从本地选一张图片">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                    <circle cx="9" cy="9" r="2" />
-                    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                  </svg>
-                </wa-button>
-                <input
-                  type="file"
-                  id="image-input"
-                  accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,image/tiff"
-                  hidden
-                />
-              </div>
-              <div class="card-foot">
-                <span class="count" id="char-count">0 字符</span>
-              </div>
-            </section>
+            <ft-source-card id="source-card"></ft-source-card>
 
             <button type="button" class="terms-trigger" id="terms-trigger">
               <span class="terms-badge"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 7.2V3.5a1 1 0 0 1 1-1h3.7a1 1 0 0 1 .7.3l5.3 5.3a1 1 0 0 1 0 1.4l-3.7 3.7a1 1 0 0 1-1.4 0L2.8 7.9a1 1 0 0 1-.3-.7z" /><circle cx="5.6" cy="5.6" r=".9" /></svg></span>
               <span class="terms-label" id="terms-label">术语 0 条</span>
               <span class="terms-go">管理 ›</span>
             </button>
-            <section class="card terms" id="terms-card">
-              <div class="card-head">
-                <span class="card-title">术语</span>
-                <span class="count" id="term-count">0</span>
-                <div class="card-meta">
-                  <wa-button id="term-clear" variant="warning" appearance="plain" size="s" disabled>清空</wa-button>
-                  <wa-button id="terms-toggle" appearance="plain" size="s">收起</wa-button>
-                </div>
-              </div>
-              <div class="terms-body" id="terms-body">
-                <div class="terms-add">
-                  <wa-input id="term-source" placeholder="术语" aria-label="术语" size="s" appearance="outlined" class="term-field" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></wa-input>
-                  <span class="term-join">翻译成</span>
-                  <span class="term-join-arrow" aria-hidden="true">→</span>
-                  <wa-input id="term-target" placeholder="译法" aria-label="译法" size="s" appearance="outlined" class="term-field" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></wa-input>
-                  <wa-button id="term-add" variant="brand" size="s" disabled>添加</wa-button>
-                  <button type="button" class="term-add-icon" id="term-add-icon" disabled aria-label="添加术语">+</button>
-                </div>
-                <div class="terms-list" id="terms-list"></div>
-              </div>
-            </section>
+
+            <ft-terms id="terms"></ft-terms>
+            
           </section>
 
           <section class="col">
-            <section class="card card-grow">
-              <div class="card-head">
-                <span class="card-title">译文</span>
-                <div class="card-meta">
-                  <button type="button" class="card-icon-btn" id="auto-copy-icon" role="switch" aria-checked="false" title="自动复制"><svg viewBox="0 0 48 48" class="icon-auto-copy" aria-hidden="true"><g transform="translate(5 -0.5) scale(0.72)" stroke-width="2.8"><path d="M13 12.4316V7.8125C13 6.2592 14.2592 5 15.8125 5H40.1875C41.7408 5 43 6.2592 43 7.8125V32.1875C43 33.7408 41.7408 35 40.1875 35H35.5163" /><path d="M32.1875 13H7.8125C6.2592 13 5 14.2592 5 15.8125V40.1875C5 41.7408 6.2592 43 7.8125 43H32.1875C33.7408 43 35 41.7408 35 40.1875V15.8125C35 14.2592 33.7408 13 32.1875 13Z" /></g><text x="24" y="42.6" font-size="10" font-family="Arial, sans-serif" text-anchor="middle" fill="currentColor" stroke="none" font-weight="700" letter-spacing="0.6">AUTO</text></svg></button>
-                  <button type="button" class="card-icon-btn" id="view-icon" title="切换到预览"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 7.2 4.4 12l4.2 4.8" /><path d="M15.4 7.2 19.6 12l-4.2 4.8" /></svg></button>
-                  <button type="button" class="toggle" id="auto-copy" role="switch" aria-checked="false" title="开启后，翻译完成自动复制译文">
-                    <span class="toggle-dot" aria-hidden="true"></span>
-                    <span class="toggle-text">自动复制</span>
-                  </button>
-                  <wa-button id="view-toggle" appearance="outlined" size="s" disabled>Markdown</wa-button>
-                  <wa-button id="copy" appearance="outlined" size="s" disabled>复制</wa-button>
-                </div>
-              </div>
-              <div class="progress-line" id="progress" hidden aria-hidden="true">
-                <span class="progress-line-runner"></span>
-              </div>
-              <div class="stale-bar" id="stale" hidden>需要重新翻译！</div>
-              <div class="output" id="output"></div>
-              <div class="usage-foot" id="usage-foot" hidden>
-                <button type="button" class="usage-chip" id="usage-chip" aria-expanded="false" title="查看本次翻译的 token 用量">
-                  <span id="usage-chip-text">0 tok</span>
-                </button>
-                <div class="usage-pop" id="usage-pop" hidden role="dialog" aria-label="本轮用量">
-                  <div class="usage-pop-head">
-                    <span>本轮用量</span>
-                    <span class="usage-pop-total" id="usage-pop-total">0 tok</span>
-                  </div>
-                  <div class="usage-rows" id="usage-rows"></div>
-                  <div class="usage-pop-foot" id="usage-pop-foot"></div>
-                </div>
-              </div>
-            </section>
+            <ft-output-card id="output-card"></ft-output-card>
           </section>
         </main>
 
-        <div class="usage-scrim" id="usage-scrim" hidden></div>
+        
 
         <div class="mobile-bar" id="mobile-bar">
           <button type="button" class="mobile-btn" id="mobile-image" title="图片翻译" aria-label="图片翻译">
@@ -290,102 +93,16 @@
       </div>
     </wa-dialog>
 
-    <div class="verify-overlay" id="verify-overlay" hidden>
-      <div class="verify-dialog">
-        <div class="verify-stage" id="verify-stage">
-          <img id="verify-image" alt="待校验的图片" />
-          <button type="button" class="verify-expand" id="verify-expand">⤢ 放大</button>
-          <div class="verify-zoom">
-            <button type="button" class="verify-zoom-btn" id="zoom-out" title="缩小">−</button>
-            <span class="verify-zoom-value" id="zoom-value">100%</span>
-            <button type="button" class="verify-zoom-btn" id="zoom-in" title="放大">＋</button>
-            <button type="button" class="verify-zoom-btn" id="zoom-reset" title="还原">重置</button>
-          </div>
-        </div>
-        <div class="verify-panel">
-          <div class="verify-head">
-            <span class="verify-head-hint">识别文本 · 改完点「确认」</span>
-            <span class="verify-head-title">校验识别结果</span>
-            <button type="button" class="verify-btn" id="verify-view" title="切换预览 / 编辑">预览</button>
-            <button type="button" class="verify-btn verify-btn-primary" id="verify-save">确认</button>
-            <button type="button" class="verify-head-close" id="verify-close" title="关闭" aria-label="关闭">
-              <svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6" /></svg>
-            </button>
-          </div>
-          <textarea
-            id="verify-editor"
-            spellcheck="false"
-            placeholder="这里显示识别出的文字，可直接修改。"
-          ></textarea>
-          <div class="verify-preview" id="verify-preview" hidden></div>
-          <div class="verify-actions" id="verify-actions">
-            <button type="button" class="verify-btn verify-abandon" id="verify-abandon">放弃</button>
-            <button type="button" class="verify-btn verify-btn-primary" id="verify-save-bottom">保存</button>
-          </div>
-          <div class="verify-confirm" id="verify-confirm" hidden>
-            <span>有未保存的修改，确定放弃吗？</span>
-            <button type="button" class="verify-btn" id="confirm-keep">继续编辑</button>
-            <button type="button" class="verify-btn verify-btn-danger" id="confirm-discard">放弃修改</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <ft-verify-dialog id="verify-dialog"></ft-verify-dialog>
 
     <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
 
     <script type="module" src="/app.js"></script>
     <div class="ctx-menu" id="ctx-menu" role="menu" aria-label="上下文菜单" hidden></div>
   
-  <div class="modal-overlay" id="model-modal" hidden>
-    <div class="modal picker-modal" role="dialog" aria-modal="true" aria-label="模型">
-      <div class="modal-head">
-        <span class="modal-title">模型</span>
-        <button type="button" class="modal-close" id="model-modal-x" title="关闭" aria-label="关闭">
-          <svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6" /></svg>
-        </button>
-      </div>
-      <div class="picker-list" id="model-modal-list"></div>
-      <div class="modal-foot">
-        <wa-button id="model-modal-cancel" appearance="plain" size="s">取消</wa-button>
-        <wa-button id="model-modal-done" variant="brand" size="s">完成</wa-button>
-      </div>
-    </div>
-  </div>
+  <ft-model-picker id="model-picker"></ft-model-picker>
+  <ft-theme-picker id="theme-picker"></ft-theme-picker>
 
-  <div class="modal-overlay" id="theme-modal" hidden>
-    <div class="modal picker-modal" role="dialog" aria-modal="true" aria-label="主题">
-      <div class="modal-head">
-        <span class="modal-title">主题</span>
-        <button type="button" class="modal-close" id="theme-modal-x" title="关闭" aria-label="关闭">
-          <svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6" /></svg>
-        </button>
-      </div>
-      <div class="picker-list" id="theme-modal-list"></div>
-      <div class="modal-foot">
-        <wa-button id="theme-modal-done" variant="brand" size="s">完成</wa-button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="balance-modal" hidden>
-    <div class="modal balance-modal" role="dialog" aria-modal="true" aria-label="余额">
-      <div class="modal-head">
-        <span class="modal-title">余额</span>
-        <button type="button" class="modal-close" id="balance-modal-x" title="关闭" aria-label="关闭">
-          <svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6" /></svg>
-        </button>
-      </div>
-      <div class="progress-line balance-modal-progress is-idle" id="balance-modal-progress" aria-hidden="true">
-        <span class="progress-line-runner"></span>
-      </div>
-      <div class="balance-body">
-        <span class="balance-amount" id="balance-amount">--</span>
-      </div>
-      <div class="modal-foot">
-        <wa-button id="balance-modal-refresh" appearance="plain" size="s">刷新</wa-button>
-        <wa-button id="balance-modal-ok" variant="brand" size="s">关闭</wa-button>
-      </div>
-    </div>
-  </div>
+  <ft-balance-dialog id="balance-dialog"></ft-balance-dialog>
 </body>
 </html>

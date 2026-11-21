@@ -1,0 +1,121 @@
+/* 卡片系统 —— 从原 app.css 按原顺序切出，规则未改动 */
+
+/* ------------------------------------------------------------ 卡片系统 */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border: var(--app-line) solid var(--app-border);
+  border-radius: var(--app-radius);
+  background: var(--app-panel);
+  box-shadow: var(--app-shadow);
+  overflow: hidden;
+}
+
+.card-grow {
+  flex: 1 1 auto;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 6px 8px 6px 14px;
+  border-bottom: var(--app-line) solid var(--app-border);
+  background: var(--app-panel-2);
+}
+
+.card-title {
+  flex: 0 0 auto;
+  font-size: var(--wa-font-size-xs);
+  font-weight: var(--app-label-weight);
+  letter-spacing: 0.06em;
+  color: var(--app-muted);
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.count {
+  font-size: var(--wa-font-size-xs);
+  color: var(--app-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 卡片底部一栏：「原文」面板的字符数放在左下角 */
+.card-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  padding: 2px 14px 10px;
+}
+
+/* 输出区顶部的「需重新翻译」提示条 */
+.stale-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  padding: 6px 14px;
+  border-bottom: var(--app-line) solid var(--app-border);
+  background: color-mix(in srgb, var(--wa-color-danger-fill-loud, #c2261a) 8%, var(--app-panel));
+  color: var(--wa-color-danger-fill-loud, #c2261a);
+  font-size: var(--wa-font-size-xs);
+}
+
+/* 图片识别状态提示*/
+
+
+/* 已选图片的预览条*/
+.image-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  border-bottom: var(--app-line) solid var(--app-border);
+  background: var(--app-panel-2);
+}
+
+.image-thumb {
+  flex: 0 0 auto;
+  height: 54px;
+  width: auto;
+  max-width: 110px;
+  object-fit: cover;
+  border: var(--app-line) solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-panel);
+  cursor: zoom-in;
+}
+
+.image-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.image-name {
+  font-size: var(--wa-font-size-xs);
+  color: var(--app-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.image-size {
+  font-size: var(--wa-font-size-xs);
+  color: var(--app-muted);
+  font-variant-numeric: tabular-nums;
+}

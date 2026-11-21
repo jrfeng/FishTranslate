@@ -1,0 +1,1201 @@
+/* 响应式与各断点 —— 从原 app.css 按原顺序切出，规则未改动 */
+
+/* ---------------------------------------------------------------- 响应式*/
+
+
+/* ============================================================================
+   中等宽度（901–1180px）：工具栏固定两行分组
+   —— 第一行 语言对 + 模型，第二行 主题 / 设置 / 余额（右对齐）
+   ========================================================================== */
+
+
+/* ============================================================================
+   紧凑宽度（≤640px）：两行工具栏 + 单列卡片 + 术语折叠成一行
+   ========================================================================== */
+
+
+/* ============================================================================
+   手机宽度（≤420px）：标题栏极简 + 翻译改为右下悬浮按钮 + 触控尺寸
+   ========================================================================== */
+
+
+/* 字符数：手机上跟在「原文」标题后面 */
+.card-count-head {
+  display: none;
+}
+
+/* ------------------------------------------------- 640 以下的「更多」菜单 */
+
+#more-btn {
+  display: none;
+}
+
+.more-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 2100;
+  min-width: 236px;
+  padding: 4px;
+  border: var(--app-line) solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-panel);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+}
+
+html[data-theme='c'] .more-menu,
+html[data-theme='d'] .more-menu {
+  box-shadow: 3px 3px 0 var(--app-border);
+}
+
+.more-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 9px;
+  border-radius: calc(var(--app-radius-sm) / 2);
+  color: var(--app-text);
+  font-size: var(--wa-font-size-xs);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.more-item:hover {
+  background: var(--app-panel-2);
+}
+
+.more-item .ico {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  color: var(--app-muted);
+}
+
+.more-item .ico svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 复用工具栏图标时，主题图标的填充部分要保持实心 */
+.more-item .ico .icon-fill {
+  fill: currentColor;
+  stroke: none;
+}
+
+.more-item .val {
+  margin-left: auto;
+  color: var(--app-muted);
+  font-size: 11.5px;
+}
+
+/* ------------------------------------------------- 选择弹窗（模型 / 主题） */
+
+.picker-modal {
+  width: 420px;
+}
+
+.picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 320px;
+  overflow: auto;
+  padding: 0 8px 10px;
+}
+
+.picker-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border-radius: calc(var(--app-radius-sm) / 2);
+  color: var(--app-text);
+  font-size: var(--wa-font-size-xs);
+  cursor: pointer;
+}
+
+.picker-item:hover {
+  background: var(--app-panel-2);
+}
+
+.picker-item.is-current {
+  background: var(--app-panel-2);
+  color: var(--app-accent);
+}
+
+.picker-item .tick {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  color: var(--app-accent);
+}
+
+.picker-item .tick svg {
+  width: 12px;
+  height: 12px;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+html[data-theme='c'] .picker-item .tick svg,
+html[data-theme='d'] .picker-item .tick svg {
+  stroke-width: 2.2;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+}
+
+/* ------------------------------------------------- 余额弹窗 */
+
+.balance-modal {
+  width: 360px;
+}
+
+.balance-body {
+  padding: 4px 16px 18px;
+}
+
+/* 余额弹窗里的刷新进度：贴着标题下沿的一条扫光，手动刷新至少显示 1 秒。
+   用 visibility 而不是 display，保证显示/隐藏时弹窗高度不变 */
+.balance-modal-progress {
+  border-radius: 0;
+}
+
+.balance-modal-progress.is-idle {
+  visibility: hidden;
+}
+
+.balance-amount {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--app-text);
+}
+
+/* ============================================================================
+   工具栏 · 窄窗口下的图标按钮（< 1000px）
+   ========================================================================== */
+
+.head-model,
+.head-tools {
+  position: relative;
+}
+
+.icon-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: var(--app-line) solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-panel);
+  color: var(--app-text);
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: var(--app-panel-2);
+}
+
+.icon-btn.is-open {
+  border-color: var(--app-accent);
+  color: var(--app-accent);
+}
+
+.icon-btn svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon-btn .icon-fill {
+  fill: currentColor;
+  stroke: none;
+}
+
+.icon-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 2100;
+  min-width: 172px;
+  max-height: 240px;
+  overflow: auto;
+  padding: 4px;
+  border: var(--app-line) solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-panel);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+}
+
+.icon-menu.is-right {
+  left: auto;
+  right: 0;
+}
+
+html[data-theme='c'] .icon-menu,
+html[data-theme='d'] .icon-menu {
+  box-shadow: 3px 3px 0 var(--app-border);
+}
+
+.icon-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  border-radius: calc(var(--app-radius-sm) / 2);
+  color: var(--app-text);
+  font-size: var(--wa-font-size-xs);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.icon-menu-item:hover {
+  background: var(--app-panel-2);
+}
+
+.icon-menu-item .tick {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  color: var(--app-accent);
+}
+
+.icon-menu-item .tick svg {
+  width: 12px;
+  height: 12px;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 风格化 / 像素主题：线条更硬，勾更粗 */
+html[data-theme='c'] .icon-menu-item .tick svg,
+html[data-theme='d'] .icon-menu-item .tick svg {
+  stroke-width: 2.2;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+}
+
+html[data-theme='c'] .icon-btn svg,
+html[data-theme='d'] .icon-btn svg {
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+}
+
+html[data-theme='c'] .icon-btn svg {
+  stroke-width: 1.9;
+}
+
+html[data-theme='d'] .icon-btn svg {
+  stroke-width: 1.7;
+}
+
+/* 齿轮用的是 24 视图，缩到 15px 后按比例加粗 */
+.icon-btn svg[viewBox='0 0 24 24'] {
+  stroke-width: 2.1;
+}
+
+/* 当前项：底色 + 强调色文字，跟主题走 */
+.icon-menu-item.is-current {
+  background: var(--app-panel-2);
+  color: var(--app-accent);
+}
+
+/* 悬停提示：200ms 后出现 */
+.toolbar-tip {
+  position: fixed;
+  z-index: 2200;
+  padding: 5px 8px;
+  border-radius: 4px;
+  background: #1b2333;
+  color: #fff;
+  font-size: 11.5px;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+}
+
+html[data-theme='c'] .toolbar-tip,
+html[data-theme='d'] .toolbar-tip {
+  border-radius: 0;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 999px) {
+  .head-model .field-label,
+  .head-tools .field-label {
+    display: none;
+  }
+
+  .model-select,
+  .theme-select {
+    display: none;
+  }
+
+  .icon-btn {
+    display: inline-flex;
+  }
+
+  /* 设置一栏：文字按钮换成齿轮图标 */
+  .settings-text {
+    display: none;
+  }
+}
+
+/* 卡片标题栏的图标按钮（≤768 生效） */
+.card-icon-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--app-radius-sm);
+  background: transparent;
+  color: var(--app-muted);
+  cursor: pointer;
+}
+
+.card-icon-btn:hover {
+  background: var(--app-panel);
+  color: var(--app-text);
+}
+
+/* 开启态与宽屏开关一致：强调色填充 + 反白图标 */
+.card-icon-btn.on {
+  background: var(--app-accent);
+  color: var(--app-accent-on);
+}
+
+.card-icon-btn.on:hover {
+  background: var(--app-accent);
+  color: var(--app-accent-on);
+}
+
+html[data-theme='c'] .card-icon-btn.on {
+  box-shadow: 2px 2px 0 #101010;
+}
+
+html[data-theme='d'] .card-icon-btn.on {
+  box-shadow: 2px 2px 0 #1b2a4a;
+}
+
+.card-icon-btn:disabled {
+  opacity: 0.32;
+  color: var(--app-muted);
+  /* 保留指针事件，否则浏览器不会显示禁用光标 */
+  cursor: not-allowed;
+}
+
+.card-icon-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 「清除」用的是 48 网格，线宽要按比例放大，否则 18px 下只有 0.56px */
+/* 「清除」用原始文件尺寸（22×22、48 网格、stroke 2），不跟着放大到 24 */
+.card-icon-btn svg[viewBox='0 0 48 48'] {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2;
+}
+
+/* 自动复制的 Copy 图形也是 48 网格，但按 24px 显示 */
+.card-icon-btn svg.icon-auto-copy {
+  width: 24px;
+  height: 24px;
+}
+
+/* 预览 / Markdown 图标线更细，和清除、Copy 保持一致 */
+.card-icon-btn[data-ref="viewIcon"] svg {
+  stroke-width: 1.1;
+}
+
+/* 术语图标是 16 网格放大到 24px（×1.5），线宽要按比例折回去才够细 */
+.card-icon-btn#terms-icon svg {
+  stroke-width: 0.65;
+}
+
+/* 术语按钮带文字：宽度自适应 + 描边 */
+.card-icon-btn.with-label {
+  width: auto;
+  gap: 5px;
+  padding: 0 10px 0 8px;
+  border: var(--app-line) solid var(--app-border);
+  font-family: inherit;
+  font-size: var(--wa-font-size-xs);
+  color: var(--app-muted);
+}
+
+.card-icon-btn.with-label:hover {
+  background: var(--app-panel);
+  color: var(--app-text);
+}
+
+.card-icon-btn .card-icon-label {
+  white-space: nowrap;
+}
+
+.card-icon-btn svg text {
+  stroke: none;
+}
+
+@media (max-width: 768px) {
+  .card-icon-btn {
+    display: inline-flex;
+  }
+
+  /* 术语入口在 641–768 仍是独立一行，640 以下才改用头部图标 */
+  #terms-icon {
+    display: none;
+  }
+
+  .card-meta {
+    gap: 6px;
+  }
+
+  #immediate,
+  #clear,
+  .output-auto-copy-text,
+  .output-view-toggle {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .terms-trigger {
+    display: flex;
+  }
+
+
+  /* 校验弹窗：图片在上、编辑区在下 */
+  .verify-dialog {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1.15fr) minmax(0, 1fr);
+    width: min(720px, 100%);
+    height: min(720px, 100%);
+  }
+
+  /* 关闭按钮挪到弹窗右上角，不再跟着编辑区头部走 */
+  .verify-head-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 3;
+    background: var(--app-panel);
+  }
+
+
+  /* 窄窗口下不再用内嵌面板，改由按钮打开专用弹窗 */
+  .card.terms {
+    display: none;
+  }
+}
+
+/* ============================================================================
+   宽度适配 · 占位
+   分界采用最通用的 1024 / 768 / 640，具体规则后续逐个补
+     · 宽屏：> 1024（默认，不需要媒体查询）
+     · 中等：640 ~ 1024（下面两个块二选一，按后续定稿）
+     · 紧凑：< 640
+   ========================================================================== */
+
+@media (max-width: 1023px) {
+  /* 中等：待实现 */
+}
+
+@media (max-width: 767px) {
+  /* 待实现（如果需要单独一档） */
+}
+
+/* 紧凑档（≤640）：两列改单列，顺序是 原文 → 术语 → 译文 */
+@media (max-width: 640px) {
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    /* 术语已挪到工具栏，这里只剩 原文 / 译文 两块，平分高度 */
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  /* 拆掉列容器，让三块直接成为同一列的兄弟节点 */
+  .col {
+    display: contents;
+  }
+
+  .grid > .card-grow {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .grid > .card-grow textarea,
+  .grid > .card-grow .editor {
+    min-height: 0;
+  }
+
+  /* 模型 / 主题 / 设置 / 余额 收进「更多」菜单 */
+  [data-role='model-icon'],
+  [data-role='theme-icon'],
+  [data-role='settings-icon'],
+  .settings-text,
+  #balance-wrap,
+  #balance-divider {
+    display: none;
+  }
+
+  #more-btn {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 auto;
+  }
+
+  /* 术语入口从独立一行挪到原文卡片工具栏 */
+  .terms-trigger {
+    display: none;
+  }
+
+  #terms-icon {
+    display: inline-flex;
+  }
+
+  /* 紧凑档给术语入口一点强调底色 */
+  .card-icon-btn.with-label {
+    background: color-mix(in srgb, var(--app-accent) 12%, var(--app-panel));
+    border-color: color-mix(in srgb, var(--app-accent) 32%, var(--app-border));
+    color: var(--app-accent);
+  }
+
+  .card-icon-btn.with-label:hover {
+    background: color-mix(in srgb, var(--app-accent) 20%, var(--app-panel));
+    color: var(--app-accent);
+  }
+}
+
+@supports not (background: color-mix(in srgb, red 10%, white)) {
+  .card-icon-btn.with-label {
+    background: var(--app-panel-2);
+  }
+}
+
+@media (max-width: 639px) {
+  /* 紧凑：待实现 */
+}
+
+/* ============================================================================
+   文本选择：桌面应用里不要出现网页那种「拖蓝」
+   —— 只有输入框、译文输出区、校验预览允许划词
+   ========================================================================== */
+
+html,
+body,
+.app {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+textarea,
+input,
+#output,
+#output *,
+#verify-preview,
+#verify-preview * {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* 占位提示（「译文会显示在这里。」「翻译中…」）不是内容，不要能被划词 */
+#output .placeholder,
+#verify-preview .placeholder {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 右键菜单的标签本身不需要被选中 */
+.ctx-menu,
+.ctx-menu * {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+
+/* ============================================================================
+   手机宽度（≤480）：工具栏两行 + 底部操作条 + 全屏抽屉
+   ========================================================================== */
+
+.mobile-bar {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  padding: 8px 12px 10px;
+  border-top: var(--app-line) solid var(--app-border);
+  background: var(--app-top);
+}
+
+.mobile-btn {
+  height: 48px;
+  min-width: 48px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: var(--app-line) solid var(--app-border);
+  border-radius: 12px;
+  background: var(--app-panel);
+  color: var(--app-text);
+  font-family: inherit;
+  font-size: var(--wa-font-size-s);
+}
+
+.mobile-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mobile-btn.primary {
+  flex: 1 1 auto;
+  background: var(--app-accent);
+  border-color: var(--app-accent);
+  color: var(--app-accent-on);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.mobile-btn.primary:disabled {
+  opacity: 0.5;
+}
+
+@media (max-width: 480px) {
+  /* 工具栏：压成单行，余额收进「更多」菜单 */
+  .head {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 6px;
+    padding: 6px 8px 6px 10px;
+  }
+
+  .lang-pair {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    gap: 4px;
+  }
+
+  .lang-pair .field-label {
+    display: none;
+  }
+
+  .lang-select {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+  }
+
+  .head-tools {
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  /* 余额只在菜单里出现，工具栏不占位 */
+  #balance-wrap {
+    display: none;
+  }
+
+  /* 卡片：触控尺寸 + 字号 */
+  .card-head {
+    min-height: 48px;
+  }
+
+  .card-icon-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .card-icon-btn svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .card-icon-btn svg[viewBox='0 0 48 48'] {
+    width: 24px;
+    height: 24px;
+    stroke-width: 3;
+  }
+
+  .hl,
+  .input,
+  #output {
+    font-size: 15px;
+  }
+
+  /* 这些入口已经进了底部操作条 */
+  #translate,
+  #terms-icon,
+  .pick-image-fab {
+    display: none;
+  }
+
+  .mobile-bar {
+    display: flex;
+  }
+
+  /* 弹窗：全屏底部抽屉 */
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .settings-form,
+  .terms-modal .terms-list {
+    max-height: none;
+  }
+}
+
+
+/* 术语弹窗：手机宽度下的紧凑单行输入（≤480） */
+.term-join-arrow,
+.term-add-icon {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .terms-modal .terms-add {
+    gap: 6px;
+    order: 2;
+    border-top: 1px solid var(--app-border);
+    padding-top: 10px;
+    padding-bottom: 4px;
+    flex: 0 0 auto;
+  }
+
+  /* 列表在上、输入条在下 */
+  #terms-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  #terms-body .terms-list {
+    order: 1;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .terms-modal .term-join {
+    display: none;
+  }
+
+  .terms-modal .term-join-arrow {
+    display: inline;
+    flex: 0 0 auto;
+    color: var(--app-muted);
+    font-size: 13px;
+  }
+
+  .terms-modal .terms-add .term-field {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  #term-add {
+    display: none;
+  }
+
+  .term-add-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: var(--app-accent);
+    color: var(--app-accent-on);
+    font-family: inherit;
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .term-add-icon:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .terms-modal .term {
+    min-height: 52px;
+  }
+}
+
+
+/* ------------------------------------------------- 校验弹窗：手机宽度（≤480） */
+
+.verify-head-title,
+.verify-expand,
+.verify-actions {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  /* 整个弹窗铺满屏幕 */
+  .verify-overlay {
+    padding: 0;
+  }
+
+  .verify-dialog {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 52px auto minmax(0, 1fr) auto;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    gap: 0;
+    background: var(--app-bg);
+  }
+
+  /* 让头部 / 图片 / 编辑区直接参与外层网格 */
+  .verify-panel {
+    display: contents;
+  }
+
+  .verify-head {
+    grid-row: 1;
+    height: 52px;
+    min-height: 0;
+    padding: 0 8px 0 6px;
+    border-bottom: 1px solid var(--app-border);
+    background: var(--app-top);
+    order: initial;
+  }
+
+  .verify-head-hint {
+    display: none;
+  }
+
+  .verify-head-title {
+    display: inline;
+    flex: 1 1 auto;
+    padding-left: 2px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--app-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .verify-head-close {
+    position: static;
+    order: -1;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 auto;
+    border: 0;
+    background: transparent;
+  }
+
+  .verify-head-close svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  #verify-save {
+    display: none;
+  }
+
+  #verify-view {
+    order: 3;
+    height: 34px;
+    padding: 0 12px;
+    flex: 0 0 auto;
+    font-size: 12.5px;
+  }
+
+  /* 图片：顶部参考条 */
+  .verify-stage {
+    grid-row: 2;
+    height: 132px;
+    margin: 10px 12px;
+    padding: 0;
+    border-radius: 12px;
+    background: var(--app-bg);
+  }
+
+  .verify-zoom {
+    top: auto;
+    left: auto;
+    right: 8px;
+    bottom: 8px;
+    border-radius: 15px;
+    padding: 0;
+    opacity: 1;
+    background: var(--app-panel);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+  }
+
+  .verify-zoom-btn {
+    height: 30px;
+    min-width: 30px;
+    font-size: 12.5px;
+  }
+
+  .verify-zoom-value {
+    min-width: 40px;
+    font-size: 12.5px;
+  }
+
+  #zoom-reset {
+    display: none;
+  }
+
+  /* 放大按钮 */
+  .verify-expand {
+    display: inline-flex;
+    align-items: center;
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    z-index: 2;
+    height: 30px;
+    padding: 0 10px;
+    border: var(--app-line) solid var(--app-border);
+    border-radius: 15px;
+    background: var(--app-panel);
+    color: var(--app-text);
+    font-family: inherit;
+    font-size: 12px;
+  }
+
+  /* 全屏看图 */
+  .verify-stage.is-full {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    height: auto;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: #0b1220;
+  }
+
+  .verify-stage.is-full .verify-expand {
+    left: 12px;
+    bottom: 16px;
+  }
+
+  .verify-stage.is-full .verify-zoom {
+    right: 12px;
+    bottom: 16px;
+  }
+
+  /* 编辑区 */
+  #verify-editor,
+  .verify-preview {
+    grid-row: 3;
+    margin: 0 12px;
+    /* 基础样式里有 width: 100%，在带 margin 的网格项上会撑出边界 */
+    width: auto;
+    max-width: 100%;
+    padding: 12px;
+    border: var(--app-line) solid var(--app-border);
+    border-radius: 12px;
+    background: var(--app-panel);
+    font-size: 15px;
+  }
+
+  /* 未保存确认：浮在底部操作条上方，不参与网格排版，避免挤压编辑区 */
+  .verify-confirm {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 80px;
+    z-index: 1300;
+    margin: 0;
+    padding: 10px 12px;
+    border: var(--app-line) solid var(--app-border);
+    border-radius: 12px;
+    background: var(--app-panel);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  .verify-confirm[hidden] {
+    display: none;
+  }
+
+  /* 提示文字单独一行，两个按钮平分下一行 */
+  .verify-confirm > span {
+    flex: 1 1 100%;
+    line-height: 1.4;
+  }
+
+  .verify-confirm .verify-btn {
+    flex: 1 1 0;
+    height: 40px;
+    font-size: 13px;
+  }
+
+  /* 底部操作条 */
+  .verify-actions {
+    display: flex;
+    grid-row: 4;
+    gap: 8px;
+    padding: 10px 12px 14px;
+    border-top: 1px solid var(--app-border);
+    background: var(--app-top);
+  }
+
+  .verify-actions .verify-abandon {
+    height: 46px;
+    padding: 0 18px;
+    font-size: 14px;
+  }
+
+  .verify-actions .verify-btn-primary {
+    flex: 1 1 auto;
+    height: 46px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .card-count-head {
+    display: inline;
+    margin-left: 6px;
+  }
+
+  /* 底部那行只在手机上让位给标题旁 */
+  .card-foot {
+    display: none;
+  }
+}
+
+
+/* ------------------------------------------------- tok 明细：手机上是底部弹窗 */
+
+.usage-scrim {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .usage-scrim:not([hidden]) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1090;
+    background: rgba(15, 23, 42, 0.36);
+  }
+
+  .usage-pop {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    z-index: 1100;
+    width: auto;
+    max-height: 70vh;
+    overflow: auto;
+    padding: 14px 16px 20px;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -12px 40px rgba(20, 30, 50, 0.22);
+  }
+
+  .usage-pop::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    margin: 0 auto 10px;
+    border-radius: 2px;
+    background: var(--app-border);
+  }
+}
+
+
+/* 术语弹窗底部：手机上「清空全部」在左、「添加」在右 */
+#term-add-foot {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  /* 输入条里的 + 让位给底部「添加」 */
+  .term-add-icon {
+    display: none;
+  }
+
+  .terms-modal-foot {
+    gap: 8px;
+    /* 左边对齐「术语」输入框，右边对齐「译法」输入框；
+       输入行本身有一层内缩，这里补上同样的偏移 */
+    justify-content: space-between;
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
+  .terms-modal-foot .terms-foot-gap {
+    display: none;
+  }
+
+  #term-add-foot {
+    display: inline-flex;
+  }
+
+  #terms-done {
+    display: none;
+  }
+}

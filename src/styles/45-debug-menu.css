@@ -1,0 +1,90 @@
+/* 调试角标、右键菜单 —— 从原 app.css 按原顺序切出，规则未改动 */
+
+/* ------------------------------------------------------------ 宽度调试角标 */
+
+#size-badge {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  z-index: 3000;
+  padding: 4px 8px;
+  border: var(--app-line) solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-panel);
+  color: var(--app-text);
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  pointer-events: none;
+  opacity: 0.92;
+  box-shadow: var(--app-shadow);
+}
+
+html[data-theme='c'] #size-badge,
+html[data-theme='d'] #size-badge {
+  box-shadow: 3px 3px 0 var(--app-border);
+}
+
+/* ------------------------------------------------------------ 右键菜单 */
+
+.ctx-menu {
+  position: fixed;
+  z-index: 2000;
+  min-width: 132px;
+  padding: 4px;
+  border: var(--app-line) solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-panel);
+  box-shadow: var(--app-shadow);
+  outline: none;
+}
+
+html[data-theme='a'] .ctx-menu {
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+}
+
+html[data-theme='b'] .ctx-menu {
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+}
+
+.ctx-item {
+  display: block;
+  width: 100%;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: calc(var(--app-radius-sm) / 2);
+  background: transparent;
+  color: var(--app-text);
+  font-family: inherit;
+  font-size: var(--wa-font-size-xs);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ctx-item:hover,
+.ctx-item:focus-visible,
+.ctx-item.is-active {
+  background: var(--app-panel-2);
+  outline: none;
+}
+
+/* 刚弹出的一瞬间不显示高亮：鼠标还在原位，焦点也可能落在第一项上 */
+.ctx-menu.ctx-idle .ctx-item:hover,
+.ctx-menu.ctx-idle .ctx-item:focus,
+.ctx-menu.ctx-idle .ctx-item:focus-visible {
+  background: transparent;
+}
+
+/* 不可用项：没选中文字时的「剪切 / 复制」 */
+.ctx-item:disabled,
+.ctx-item.is-disabled {
+  color: var(--app-muted);
+  opacity: 0.55;
+  cursor: default;
+  background: transparent;
+}
+
+html[data-theme='c'] .ctx-item,
+html[data-theme='d'] .ctx-item {
+  border-radius: 0;
+}

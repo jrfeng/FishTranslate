@@ -5,6 +5,7 @@
   "description": "Fish翻译 · 多语言互译桌面客户端",
   "scripts": {
     "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
     "tauri": "tauri",
     "dev": "tauri dev",
     "bundle": "tauri build"
