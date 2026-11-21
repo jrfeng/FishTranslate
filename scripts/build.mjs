@@ -29,11 +29,18 @@ await build({
   },
 })
 
-for (const file of ['index.html', 'app.css']) {
-  await copyFile(join(src, file), join(out, file))
-}
+// 样式：src/styles/main.css 通过 @import 汇总，这里交给 esbuild 内联成一个 app.css
+await build({
+  entryPoints: [join(src, 'styles', 'main.css')],
+  bundle: true,
+  charset: 'utf8',
+  // 主题 CSS 里用绝对路径引用 /assets、/styles，交给运行时解析
+  external: ['/assets/*', '/styles/*'],
+  outfile: join(out, 'app.css'),
+  logLevel: 'info',
+})
 
-for (const file of ['index.html', 'app.css', 'boot-head.js', 'boot-body.js']) {
+for (const file of ['index.html', 'boot-head.js', 'boot-body.js']) {
   await copyFile(join(src, file), join(out, file))
 }
 

@@ -1,0 +1,19 @@
+/* 网格布局 —— 从原 app.css 按原顺序切出，规则未改动 */
+
+/* ------------------------------------------------------------------ 布局 */
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  min-height: 0;
+}

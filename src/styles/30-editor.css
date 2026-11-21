@@ -1,0 +1,217 @@
+/* 输入区 / 原文卡片 —— 从原 app.css 按原顺序切出，规则未改动 */
+
+/* -------------------------------------------------------------- 输入区*/
+
+.editor {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* 图片预览条上的按钮：重新识别 / 校验，统一 30×30 图标 */
+.image-refresh-btn::part(button) {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  padding: 0;
+  justify-content: center;
+  border: var(--app-line) solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-panel);
+  /* 和旁边的校验图标同色，否则同样线宽看起来更重 */
+  color: var(--app-muted);
+}
+
+.image-refresh-btn::part(button):hover {
+  color: var(--app-text);
+  background: var(--app-panel-2);
+}
+
+.image-strip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: var(--app-line) solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-panel);
+  color: var(--app-muted);
+  cursor: pointer;
+}
+
+/* 文字版「校验」已被图标取代 */
+#image-zoom {
+  display: none;
+}
+
+/* 像素风主题里 wa-button 带硬阴影，图标按钮也补上，保持同款 */
+html[data-theme='c'] .image-strip-icon {
+  box-shadow: 2px 2px 0 #101010;
+}
+
+html[data-theme='d'] .image-strip-icon {
+  box-shadow: 2px 2px 0 #1b2a4a;
+}
+
+.image-strip-icon:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.image-strip-icon:hover {
+  background: var(--app-panel-2);
+  color: var(--app-text);
+}
+
+.image-strip-icon svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.image-refresh-icon {
+  display: block;
+  color: currentColor;
+  transform-origin: 50% 50%;
+}
+
+/* OCR 进行中时图标转圈 */
+.image-refresh-btn.is-spinning .image-refresh-icon {
+  animation: refresh-spin 0.9s linear infinite;
+}
+
+@keyframes refresh-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image-refresh-btn.is-spinning .image-refresh-icon {
+    animation-duration: 2.4s;
+  }
+}
+
+/* 图片按钮悬浮在输入框右下角（阴影加到圆角的 part 上，避免宿主矩形露出直角） */
+.pick-image-fab {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 2;
+}
+
+/* 圆形悬浮按钮（FAB 风格） */
+.pick-image-fab::part(button) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--app-accent);
+  color: var(--app-accent-on);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+  transition: filter 0.15s ease, transform 0.12s ease;
+}
+
+.pick-image-fab::part(button):hover {
+  filter: brightness(1.08);
+}
+
+.pick-image-fab::part(button):active {
+  transform: scale(0.96);
+}
+
+.pick-image-fab svg {
+  display: block;
+}
+
+.hl {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 14px 16px 46px;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  border: 0;
+  background: transparent;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: normal;
+  font-family: var(--wa-font-family-body);
+  font-size: var(--wa-font-size-s);
+  line-height: 1.6;
+  color: var(--app-text);
+  scrollbar-gutter: stable;
+}
+
+.input {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 14px 16px 46px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: transparent;
+  caret-color: var(--app-text);
+  resize: none;
+  outline: none;
+  font-family: var(--wa-font-family-body);
+  font-size: var(--wa-font-size-s);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: normal;
+  scrollbar-gutter: stable;
+}
+
+.input::selection {
+  color: transparent;
+  background: color-mix(in srgb, var(--app-accent) 26%, transparent);
+}
+
+.input::placeholder {
+  color: var(--app-muted);
+}
+
+.hl-marker {
+  color: var(--app-muted);
+}
+
+/* 注意：高亮层的 <span> 只能改颜色/背景，不能改 font-weight、padding、border、letter-spacing，
+   否则字形宽度会和下面 textarea 里的文字对不上，光标和选区就会错位 */
+.hl-heading {
+  color: var(--app-accent);
+}
+
+.hl-code {
+  color: var(--wa-color-warning-fill-loud, #a86400);
+}
+
+.hl-link {
+  color: var(--wa-color-text-link, var(--app-accent));
+}
+
+html[data-theme='c'] .hl-code {
+  background: #ffe066;
+  border-radius: 2px;
+  color: #101010;
+}

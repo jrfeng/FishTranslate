@@ -1,0 +1,199 @@
+/* 设置弹窗 —— 从原 app.css 按原顺序切出，规则未改动 */
+
+/* ---------------------------------------------------------------- 设置弹窗 */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+html[data-theme='a'] .modal-overlay {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 460px;
+  max-height: 100%;
+  overflow: hidden;
+  border: var(--app-line) solid var(--app-border);
+  border-radius: var(--app-radius);
+  background: var(--app-panel);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  padding: 14px 16px 8px;
+}
+
+.modal-title {
+  font-family: var(--wa-font-family-heading);
+  font-size: var(--wa-font-size-s);
+  font-weight: var(--app-label-weight);
+  color: var(--app-text);
+}
+
+.modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-left: auto;
+  padding: 0;
+  border: var(--app-line) solid var(--app-border);
+  border-radius: calc(var(--app-radius-sm) / 2);
+  background: transparent;
+  color: var(--app-muted);
+  cursor: pointer;
+}
+
+.modal-close svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+
+.modal-close:hover {
+  background: var(--app-panel-2);
+  color: var(--app-text);
+}
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 6px 16px 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* 标签 + 模型读取状态同一行 */
+.label-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.model-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  font-size: var(--wa-font-size-xs);
+  color: var(--app-muted);
+}
+
+.model-status .status-icon {
+  display: none;
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+}
+
+.model-status .status-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.model-status.is-ok {
+  color: var(--wa-color-success-fill-loud, #1f7a4d);
+}
+
+.model-status.is-ok .icon-ok {
+  display: block;
+  stroke: var(--wa-color-success-fill-loud, #1f7a4d);
+}
+
+.model-status.is-fail {
+  color: var(--wa-color-danger-fill-loud, #c2261a);
+}
+
+.model-status.is-fail .icon-fail {
+  display: block;
+  stroke: var(--wa-color-danger-fill-loud, #c2261a);
+}
+
+.model-status.is-loading .icon-loading {
+  display: block;
+  animation: model-spin 0.9s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+.model-status .spinner-track {
+  stroke: var(--app-border);
+}
+
+.model-status .spinner-arc {
+  stroke: currentColor;
+}
+
+@keyframes model-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.field-hint {
+  font-size: var(--wa-font-size-xs);
+  line-height: 1.5;
+  color: var(--app-muted);
+}
+
+.settings-form .field-key,
+.settings-form .field-url {
+  width: 100%;
+}
+
+.modal-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex: 0 0 auto;
+  padding: 10px 16px 16px;
+}
+
+.field-key,
+.field-url {
+  width: 260px;
+}
+
+/* API Key 用 text 输入 + 文字遮蔽，避免 WebView2 把它当密码框弹「保存密码」 */
+wa-input.is-secret::part(input) {
+  -webkit-text-security: disc;
+  letter-spacing: 0.08em;
+}
+
+.hint {
+  flex: 0 1 auto;
+  min-width: 0;
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--wa-font-size-xs);
+  color: var(--app-muted);
+}

@@ -1,0 +1,263 @@
+/* 进度条、对话框、Toast —— 从原 app.css 按原顺序切出，规则未改动 */
+
+/* -------------------------------------------------------------- 进度条*/
+
+/* 输出卡顶部的一条细扫光，比整条实心进度条轻得多 */
+.progress-line {
+  position: relative;
+  flex: 0 0 auto;
+  height: 2px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--app-accent) 14%, transparent);
+}
+
+.progress-line-runner {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 38%;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--app-accent) 45%,
+    var(--app-accent) 55%,
+    transparent 100%
+  );
+  animation: progress-sweep 1.15s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes progress-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(265%);
+  }
+}
+
+/* 余额刷新进度：贴在余额标签下沿的一条细扫光 */
+.balance-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  /* 固定宽度：占位符「余额 --」和真实数值「余额 ¥128.50」宽度不同，
+     锁死之后数字变化不会带动整排工具栏抖动 */
+  min-width: 108px;
+}
+
+.balance-wrap wa-tag {
+  justify-content: center;
+  /* 占位「余额 --」和真实数值「余额 ¥128.50」宽窄不同，
+     给标签一个固定最小宽度，两种状态下胶囊本身也不会变胖变瘦 */
+  min-width: 104px;
+}
+
+/* 占位态用弱化颜色，和真实余额区分开 */
+.balance-wrap wa-tag.is-placeholder::part(content) {
+  color: var(--app-muted);
+}
+
+.balance-progress {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  bottom: -5px;
+  height: 2px;
+  border-radius: 2px;
+}
+
+/* 一次扫光正好 1 秒，和最短显示时长对齐 */
+.balance-progress .progress-line-runner {
+  animation-duration: 1s;
+}
+
+html[data-theme='c'] .balance-progress,
+html[data-theme='d'] .balance-progress {
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 3px;
+  border-radius: 0;
+}
+
+html[data-theme='c'] .progress-line {
+  height: 3px;
+  background: #ffe066;
+}
+
+html[data-theme='c'] .progress-line-runner {
+  background: linear-gradient(90deg, transparent 0%, #101010 50%, transparent 100%);
+}
+
+/* ---------------------------------------------------------------- 对话框*/
+
+/* wa-dialog 的结构跟随主题：底色、描边、圆角、投影都取自 --app-* */
+wa-dialog::part(dialog) {
+  padding: 0;
+  max-width: min(440px, calc(100vw - 48px));
+  border: var(--app-line) solid var(--app-border);
+  border-radius: var(--app-radius);
+  background: var(--app-panel);
+  box-shadow: var(--app-shadow);
+  color: var(--app-text);
+  font-family: var(--wa-font-family-body);
+  font-size: var(--wa-font-size-s);
+}
+
+html[data-theme='a'] wa-dialog::part(dialog) {
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.6);
+}
+
+html[data-theme='b'] wa-dialog::part(dialog) {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14);
+}
+
+wa-dialog::part(header) {
+  padding: 14px 16px 4px;
+}
+
+wa-dialog::part(title) {
+  margin: 0;
+  font-family: var(--wa-font-family-heading);
+  font-size: var(--wa-font-size-s);
+  font-weight: var(--app-label-weight);
+  color: var(--app-text);
+}
+
+wa-dialog::part(body) {
+  padding: 10px 16px 16px;
+  font-size: var(--wa-font-size-xs);
+  line-height: 1.6;
+  color: var(--app-text);
+}
+
+wa-dialog::part(footer) {
+  padding: 4px 16px 14px;
+}
+
+/* 像素风主题：对话框也走直角 + 硬投影 + 加粗描边 */
+html[data-theme='d'] wa-dialog::part(dialog) {
+  box-shadow: 4px 4px 0 var(--app-border);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* plain 外观的按钮自带一个负的纵向缩进（为了和普通按钮对齐文字），
+   没有底色时看不出来，hover 一上色就会显得底色错位 1px —— 弹窗里直接归零 */
+.dialog-actions wa-button {
+  --_button-vertical-indent: 0px;
+  --_button-horizontal-indent: 0px;
+  margin-block-start: 0;
+  margin-inline-start: 0;
+}
+
+/* ---------------------------------------------------------------- Toast */
+
+.toast-stack {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: min(420px, calc(100vw - 36px));
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  /* 结构跟随主题：描边粗细、圆角、底色、投影都由 --app-* 决定 */
+  border: var(--app-line) solid var(--app-border);
+  border-radius: var(--app-radius);
+  background: var(--app-panel);
+  box-shadow: var(--app-shadow);
+  font-size: var(--wa-font-size-xs);
+  line-height: 1.5;
+  color: var(--app-text);
+  pointer-events: auto;
+  animation: toast-in 0.18s ease-out;
+}
+
+/* 悬浮元素需要比卡片更明显的投影；c / d 用主题自带的硬投影 */
+html[data-theme='a'] .toast {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+}
+
+html[data-theme='b'] .toast {
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+}
+
+/* 提示类型只由左侧色条表达，颜色取自主题，避免出现主题外的色块 */
+.toast::before {
+  content: '';
+  flex: 0 0 auto;
+  align-self: stretch;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--app-muted);
+}
+
+.toast-warn::before {
+  background: var(--app-accent);
+}
+
+.toast-error::before {
+  background: var(--wa-color-danger-fill-loud, #c2261a);
+}
+
+html[data-theme='c'] .toast::before,
+html[data-theme='d'] .toast::before {
+  width: 6px;
+  border-radius: 0;
+}
+
+.toast-text {
+  flex: 1 1 auto;
+  overflow-wrap: anywhere;
+}
+
+.toast-close {
+  flex: 0 0 auto;
+  padding: 0 2px;
+  border: 0;
+  background: transparent;
+  color: var(--app-muted);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.toast-close:hover {
+  color: var(--app-text);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+html[data-theme='c'] .toast {
+  border-width: 2px;
+  border-radius: 6px;
+  box-shadow: 3px 3px 0 #101010;
+}

@@ -67,9 +67,19 @@ src/
     ft-verify-dialog.js
     ft-status-bar.js
   styles/
-    tokens.css        主题变量
-    base.css          重置、排版
-    components/*.css  按组件拆分
+    main.css          样式入口（@import 汇总，构建时内联）
+    00-base.css       基础 / 标题栏 / 工具栏
+    10-cards.css      卡片系统
+    15-verify.css     校验弹窗
+    20-settings.css   设置弹窗
+    25-layout.css     网格布局
+    30-editor.css     输入区 / 原文卡片
+    35-terms.css      术语面板
+    40-output.css     译文与用量
+    45-debug-menu.css 调试角标 / 右键菜单
+    50-markdown.css   Markdown 排版
+    55-progress-dialogs.css 进度条 / 对话框 / Toast
+    60-responsive.css 响应式与各断点
 ```
 
 ## 组件边界与数据流
@@ -112,7 +122,7 @@ src/
 | 5d | 校验识别结果弹窗（缩放 / 预览 / 未保存确认） | 高 | ✅ |
 | 6 | 校验弹窗 + 状态栏 | 中 | 待做 |
 | 6 | 纯函数模块拆分（markdown / storage / constants / prompt） | 低 | ✅ |
-| 7 | 删掉 `app.js` 的旧代码，收尾 CSS | 中 | 待做 |
+| 7 | 删掉 `app.js` 的旧代码，收尾 CSS | 中 | 进行中（CSS 已拆分） |
 
 阶段 5 最危险：高亮层、字符数、粘贴、图片缩放都有历史 bug 修复，迁移时必须配套回归清单。
 
