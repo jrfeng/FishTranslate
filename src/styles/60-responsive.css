@@ -1038,12 +1038,15 @@ input,
     opacity: 1;
     background: var(--app-panel);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+    /* 让内部按钮的悬浮底色被胶囊圆角裁切，不再露出直角矩形 */
+    overflow: hidden;
   }
 
   .verify-zoom-btn {
     height: 30px;
     min-width: 30px;
     font-size: 12.5px;
+    border-radius: 0;
   }
 
   .verify-zoom-value {
