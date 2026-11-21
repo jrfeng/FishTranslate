@@ -605,6 +605,24 @@ html[data-theme='d'] .card-icon-btn.on {
     background: color-mix(in srgb, var(--app-accent) 20%, var(--app-panel));
     color: var(--app-accent);
   }
+
+  /* 字数从卡片左下角挪到「原文」标题后面（≤640 和手机一致） */
+  .card-count-head {
+    position: relative;
+    top: 1px;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    margin-left: 6px;
+  }
+
+  .card-title {
+    line-height: 1;
+  }
+
+  .card-foot {
+    display: none;
+  }
 }
 
 @supports not (background: color-mix(in srgb, red 10%, white)) {
@@ -1059,23 +1077,6 @@ input,
 
 @media (max-width: 480px) {
   /* 标题和字数按行盒垂直居中；实测字数的字形比标题高 1px，补一个像素的位移 */
-  .card-count-head {
-    position: relative;
-    top: 1px;
-    display: inline-flex;
-    align-items: center;
-    line-height: 1;
-    margin-left: 6px;
-  }
-
-  .card-title {
-    line-height: 1;
-  }
-
-  /* 底部那行只在手机上让位给标题旁 */
-  .card-foot {
-    display: none;
-  }
 }
 
 
