@@ -696,10 +696,25 @@ input,
 
 /* 术语图标是 16 网格，按卡片头里同样的视觉线宽折算（0.65 × 24/16），
    否则沿用 24 网格图标的 1.6 会显得又粗又实 */
+#mobile-terms {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 #mobile-terms svg {
+  display: block;
+  flex: 0 0 auto;
   width: 20px;
   height: 20px;
   stroke-width: 0.78;
+}
+
+/* 文字也按行盒垂直居中，避免和图标出现半个像素的上下错位 */
+#mobile-terms span {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
 }
 
 .mobile-btn.primary {
