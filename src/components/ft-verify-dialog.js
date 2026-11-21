@@ -10,7 +10,7 @@ import { highlightSource, renderMarkdown } from '../lib/markdown.js'
  * - `text`     识别出的文本（打开时写入编辑框）
  *
  * 事件：
- * - `save`（detail: { text }）用户点「确认 / 保存」
+ * - `save`（detail: { text }）用户点「保存」
  * - `close` 用户放弃并关闭
  *
  * 内部自己管理：缩放/平移、全屏放大、编辑/预览切换、未保存确认。
@@ -30,10 +30,10 @@ const TEMPLATE = `
       </div>
       <div class="verify-panel">
         <div class="verify-head">
-          <span class="verify-head-hint" data-ref="hint">识别文本 · 改完点「确认」</span>
+          <span class="verify-head-hint" data-ref="hint">识别文本 · 改完点「保存」</span>
           <span class="verify-head-title">校验识别结果</span>
           <button type="button" class="verify-btn" id="verify-view" data-ref="view" title="切换预览 / 编辑">预览</button>
-          <button type="button" class="verify-btn verify-btn-primary" id="verify-save" data-ref="save">确认</button>
+          <button type="button" class="verify-btn verify-btn-primary" id="verify-save" data-ref="save">保存</button>
           <button type="button" class="verify-head-close" data-ref="close" title="关闭" aria-label="关闭">
             <svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6" /></svg>
           </button>
@@ -260,9 +260,8 @@ class FtVerifyDialog extends FtElement {
     this.ref('editWrap').hidden = previewing
     this.ref('preview').hidden = !previewing
     this.ref('view').textContent = previewing ? '编辑' : '预览'
-    // 手机底部按钮叫「保存」，宽屏头部按钮叫「确认」，提示文案跟着改
-    const compact = window.matchMedia('(max-width: 480px)').matches
-    this.ref('hint').textContent = compact ? '识别文本 · 改完点「保存」' : '识别文本 · 改完点「确认」'
+    // 头部和底部按钮现在都叫「保存」，提示文案固定
+    this.ref('hint').textContent = '识别文本 · 改完点「保存」'
     if (previewing) {
       this.ref('preview').innerHTML =
         '<div class="md">' + renderMarkdown(this.ref('editor').value) + '</div>'
