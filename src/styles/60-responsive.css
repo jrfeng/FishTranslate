@@ -1054,14 +1054,37 @@ input,
     font-size: 15px;
   }
 
+  /* 未保存确认：浮在底部操作条上方，不参与网格排版，避免挤压编辑区 */
   .verify-confirm {
-    grid-row: 3;
-    align-self: end;
-    margin: 0 12px 10px;
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 80px;
+    z-index: 1300;
+    margin: 0;
     padding: 10px 12px;
     border: var(--app-line) solid var(--app-border);
     border-radius: 12px;
     background: var(--app-panel);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  .verify-confirm[hidden] {
+    display: none;
+  }
+
+  /* 提示文字单独一行，两个按钮平分下一行 */
+  .verify-confirm > span {
+    flex: 1 1 100%;
+    line-height: 1.4;
+  }
+
+  .verify-confirm .verify-btn {
+    flex: 1 1 0;
+    height: 40px;
+    font-size: 13px;
   }
 
   /* 底部操作条 */
