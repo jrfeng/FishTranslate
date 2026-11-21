@@ -1054,6 +1054,16 @@ function markPlainPasteIntent() {
 }
 
 function bind() {
+  bindClipboardAndContext()
+  bindOutputCardEvents()
+  bindSourceAndImage()
+  bindMobileBar()
+  bindLongPress()
+  bindMenusAndDialogs()
+  bindToolbarEvents()
+}
+
+function bindClipboardAndContext() {
   // Ctrl+V：带格式的内容（网页、Word、Notion 等）先转成 Markdown 再插入；
   // 纯文本仍然走浏览器原生粘贴，不干预
   el.source.addEventListener('paste', (event) => {
@@ -1124,6 +1134,9 @@ function bind() {
   window.addEventListener('blur', hideContextMenu)
   window.addEventListener('resize', hideContextMenu)
   document.addEventListener('scroll', hideContextMenu, true)
+}
+
+function bindOutputCardEvents() {
   el['output-card'].addEventListener('copy', () => void copyText(state.output))
   el['output-card'].addEventListener('toggle-view', () => {
     state.view = state.view === 'preview' ? 'source' : 'preview'
@@ -1134,7 +1147,9 @@ function bind() {
     writeStore(KEYS.autoCopy, state.autoCopy ? '1' : '0')
     renderChrome()
   })
+}
 
+function bindSourceAndImage() {
   el.source.addEventListener('input', () => {
     state.input = el.source.value
     syncHighlight()
@@ -1247,7 +1262,9 @@ function bind() {
 
   // 图标版「清除」和文字版走同一个函数
   el['clear-icon'].addEventListener('click', clearAll)
+}
 
+function bindMobileBar() {
   el['terms-trigger'].addEventListener('click', () => {
     state.termsModalOpen = true
     renderChrome()
@@ -1265,7 +1282,9 @@ function bind() {
     if (el['mobile-translate'].disabled) return
     void run()
   })
+}
 
+function bindLongPress() {
   // 触屏长按 = 右键：向落点补发一个 contextmenu，复用现有菜单逻辑
   let longPressTimer = 0
   let longPressOrigin = null
@@ -1319,7 +1338,9 @@ function bind() {
       { passive: true },
     )
   }
+}
 
+function bindMenusAndDialogs() {
   // 点外部关闭「更多」菜单
   document.addEventListener('mousedown', (event) => {
     if (!state.moreMenuOpen) return
@@ -1460,7 +1481,9 @@ function bind() {
   el['balance'].addEventListener('click', () => void refreshBalance(true))
 
   bindWindowControls()
+}
 
+function bindToolbarEvents() {
   el['toolbar'].addEventListener('settings', () => {
     state.settingsOpen = true
     renderChrome()
