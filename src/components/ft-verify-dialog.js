@@ -43,10 +43,11 @@ const TEMPLATE = `
           <textarea id="verify-editor" data-ref="editor" spellcheck="false" placeholder="这里显示识别出的文字，可直接修改。"></textarea>
         </div>
         <div class="verify-preview" id="verify-preview" data-ref="preview" hidden></div>
-        <div class="verify-actions" data-ref="actions">
-          <button type="button" class="verify-btn verify-abandon" data-ref="abandon">放弃</button>
-          <button type="button" class="verify-btn verify-btn-primary" data-ref="saveBottom">保存</button>
-        </div>
+      </div>
+
+      <div class="verify-actions" data-ref="actions">
+        <button type="button" class="verify-btn verify-abandon" data-ref="abandon">放弃</button>
+        <button type="button" class="verify-btn verify-btn-primary" data-ref="saveBottom">保存</button>
       </div>
     </div>
 

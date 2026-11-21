@@ -803,8 +803,6 @@ input,
 
   .mobile-bar {
     display: flex;
-    /* 和上方内容区之间留一段明显的空白 */
-    margin-top: 12px;
   }
 
   /* 弹窗：全屏底部抽屉 */
@@ -922,7 +920,7 @@ input,
   .verify-dialog {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
     width: 100%;
     height: 100%;
     padding: 0;
@@ -936,7 +934,7 @@ input,
   .verify-panel {
     grid-row: 2;
     grid-column: 1;
-    margin: 0 12px 10px;
+    margin: 0 12px;
     min-height: 0;
   }
 
@@ -1031,12 +1029,17 @@ input,
   }
 
   /* 底部操作条 */
+  /* 底部操作条独立成卡片，和文本卡片之间留一段空白 */
   .verify-actions {
     display: flex;
+    grid-row: 3;
+    grid-column: 1;
     gap: 8px;
+    margin: 12px 12px 10px;
     padding: 10px 12px 14px;
-    border-top: 1px solid var(--app-border);
-    background: var(--app-top);
+    border: var(--app-line) solid var(--app-border);
+    border-radius: 12px;
+    background: var(--app-panel);
   }
 
   .verify-actions .verify-abandon {
