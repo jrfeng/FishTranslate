@@ -156,6 +156,11 @@ class FtVerifyDialog extends FtElement {
     editor.addEventListener('scroll', () => this.syncEditorScroll())
     this.renderHighlight()
 
+    // 窗口缩放会让滚动条出现 / 消失，宽度得重新对齐
+    if (typeof ResizeObserver === 'function') {
+      new ResizeObserver(() => this.syncEditorMetrics()).observe(this.ref('editWrap'))
+    }
+
     this.bindStage()
     this.ref('zoomIn').addEventListener('click', () => this.setZoom(this.#zoom * 1.25))
     this.ref('zoomOut').addEventListener('click', () => this.setZoom(this.#zoom / 1.25))
@@ -256,7 +261,6 @@ class FtVerifyDialog extends FtElement {
         '<div class="md">' + renderMarkdown(this.ref('editor').value) + '</div>'
     } else {
       this.renderHighlight()
-      this.syncEditorScroll()
     }
   }
 
@@ -292,8 +296,26 @@ class FtVerifyDialog extends FtElement {
     const hl = this.ref('hl')
     const editor = this.ref('editor')
     if (hl === null || editor === null) return
+    this.syncEditorMetrics()
     hl.innerHTML = highlightSource(editor.value)
     this.syncEditorScroll()
+  }
+
+  /**
+   * 让高亮层和 textarea 的文本盒子严格重合。
+   * 关键是竖向滚动条会占掉 textarea 的内容宽度：不补这段宽度，
+   * 两层换行位置不一致，滚动后选区就会压在错的字上。
+   */
+  syncEditorMetrics() {
+    const hl = this.ref('hl')
+    const editor = this.ref('editor')
+    if (hl === null || editor === null) return
+    const style = window.getComputedStyle(editor)
+    const scrollbar = Math.max(0, editor.offsetWidth - editor.clientWidth)
+    hl.style.paddingTop = style.paddingTop
+    hl.style.paddingRight = parseFloat(style.paddingRight) + scrollbar + 'px'
+    hl.style.paddingBottom = style.paddingBottom
+    hl.style.paddingLeft = style.paddingLeft
   }
 
   /** 只同步滚动位置，避免滚动时重建高亮层 */
