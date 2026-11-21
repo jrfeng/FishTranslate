@@ -85,6 +85,7 @@ import './components/ft-toolbar.js'
 import './components/ft-settings-sheet.js'
 import './components/ft-terms.js'
 import './components/ft-source-editor.js'
+import './components/ft-source-card.js'
 import './components/ft-size-badge.js'
 import './components/ft-verify-dialog.js'
 import './components/ft-output-card.js'
@@ -889,7 +890,7 @@ function buildContextItems(region, event) {
       label: '全选',
       run: () => {
         const range = document.createRange()
-        range.selectNodeContents(out)
+        range.selectNodeContents(document.getElementById('output'))
         const selection = window.getSelection()
         if (selection === null) return
         selection.removeAllRanges()

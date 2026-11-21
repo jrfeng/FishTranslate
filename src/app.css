@@ -494,6 +494,11 @@ ft-size-badge {
   display: contents;
 }
 
+/* 原文卡片组件同样不产生盒子 */
+ft-source-card {
+  display: contents;
+}
+
 .head {
   display: flex;
   align-items: center;
