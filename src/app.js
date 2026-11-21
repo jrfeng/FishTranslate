@@ -44,6 +44,7 @@ import './components/ft-more-menu.js'
 import './components/ft-icon-menu.js'
 import './components/ft-toolbar.js'
 import './components/ft-settings-sheet.js'
+import './components/ft-terms.js'
 
 const MAX_TERMS = 50
 const COPIED_MS = 1600
@@ -151,8 +152,6 @@ const state = {
   autoCopy: false,
   immediate: false,
   terms: [],
-  termSource: '',
-  termTarget: '',
   termsOpen: true,
   sourceLang: DEFAULT_SOURCE_LANG,
   targetLang: DEFAULT_TARGET_LANG,
@@ -255,28 +254,12 @@ for (const id of [
   'translate',
   'hl',
   'source',
-  'term-count',
-  'term-clear',
+  'terms',
   'confirm-modal',
   'confirm-cancel',
   'confirm-ok',
-  'terms-toggle',
   'terms-trigger',
   'terms-label',
-  'terms-modal',
-  'terms-modal-body',
-  'terms-modal-count',
-  'terms-x',
-  'terms-done',
-  'terms-clear-modal',
-  'terms-card',
-  'terms-body',
-  'term-source',
-  'term-target',
-  'term-add',
-  'term-add-icon',
-  'term-add-foot',
-  'terms-list',
   'auto-copy',
   'immediate',
   'immediate-icon',
@@ -836,25 +819,15 @@ function renderChrome() {  const loading = state.phase === 'loading'
 
   const narrow = window.matchMedia('(max-width: 768px)').matches
   el['terms-label'].textContent = '术语 ' + state.terms.length + ' 条'
-  el['terms-toggle'].textContent = state.termsOpen ? '收起' : '展开'
-  el['term-count'].textContent = String(state.terms.length)
-  el['terms-modal-count'].textContent = state.terms.length + ' 条'
-  el['terms-modal'].hidden = !(narrow && state.termsModalOpen)
-  el['terms-body'].hidden = narrow ? false : !state.termsOpen
+  const termsPanel = el['terms']
+  if (termsPanel !== null && termsPanel !== undefined) {
+    termsPanel.terms = state.terms
+    termsPanel.narrow = narrow
+    termsPanel.expanded = state.termsOpen
+    termsPanel.modalOpen = state.termsModalOpen
+    termsPanel.maxReached = state.terms.length >= MAX_TERMS
+  }
 
-  // 同一套输入框/列表，按宽度挂到面板或弹窗里
-  const host = narrow ? el['terms-modal-body'] : el['terms-card']
-  if (el['terms-body'].parentElement !== host) host.appendChild(el['terms-body'])
-
-  el['terms-clear-modal'].disabled = state.terms.length === 0
-  el['term-clear'].disabled = state.terms.length === 0
-  el['term-add'].disabled = !(
-    state.termSource.trim().length > 0 &&
-    state.termTarget.trim().length > 0 &&
-    state.terms.length < MAX_TERMS
-  )
-  el['term-add-icon'].disabled = el['term-add'].disabled
-  el['term-add-foot'].disabled = el['term-add'].disabled
 }
 
 /* ---------------------------------------------------------------- 用量 */
@@ -1019,59 +992,8 @@ function splitTerm(term) {
 }
 
 function renderTerms() {
-  const list = el['terms-list']
-  list.replaceChildren()
-
-  if (state.terms.length === 0) {
-    const empty = document.createElement('div')
-    empty.className = 'terms-empty'
-    empty.textContent = '还没有术语。添加后会随每次翻译一起发给模型。'
-    list.appendChild(empty)
-    return
-  }
-
-  state.terms.forEach((term, index) => {
-    const row = document.createElement('div')
-    row.className = 'term'
-
-    const [sourceText, targetText] = splitTerm(term)
-
-    const from = document.createElement('span')
-    from.className = 'term-token'
-    from.title = term
-    from.textContent = sourceText
-
-    const remove = document.createElement('button')
-    remove.type = 'button'
-    remove.className = 'term-remove'
-    remove.title = '删除'
-    remove.setAttribute('aria-label', '删除')
-    remove.textContent = '\u00d7'
-    remove.addEventListener('click', () => {
-      state.terms.splice(index, 1)
-      persistTerms()
-      renderTerms()
-      renderChrome()
-    })
-
-    row.append(from)
-
-    if (targetText.length > 0) {
-      const arrow = document.createElement('span')
-      arrow.className = 'term-arrow'
-      arrow.textContent = window.matchMedia('(max-width: 480px)').matches ? '→' : '翻译成'
-
-      const to = document.createElement('span')
-      to.className = 'term-token'
-      to.title = term
-      to.textContent = targetText
-
-      row.append(arrow, to)
-    }
-
-    row.append(remove)
-    list.appendChild(row)
-  })
+  const termsPanel = el['terms']
+  if (termsPanel !== null && termsPanel !== undefined) termsPanel.terms = state.terms
 }
 
 /** 给 wa-select 补一个下箭头（Web Awesome 自带的 wa-icon 没有注册，默认不可见） */
@@ -1246,20 +1168,11 @@ function persistTerms() {
   writeStore(KEYS.terms, JSON.stringify(state.terms))
 }
 
-function addTerm() {
-  const source = state.termSource.trim()
-  const target = state.termTarget.trim()
+/** 添加一条术语（表单校验与清空由 <ft-terms> 自己处理） */
+function addTermEntry(source, target) {
   if (source.length === 0 || target.length === 0 || state.terms.length >= MAX_TERMS) return
-
   const entry = source + ' 翻译成 ' + target
   if (!state.terms.includes(entry)) state.terms.push(entry)
-
-  state.termSource = ''
-  state.termTarget = ''
-  el['term-source'].value = ''
-  el['term-target'].value = ''
-  el['term-source'].focus()
-
   persistTerms()
   renderTerms()
   renderChrome()
@@ -2157,7 +2070,6 @@ function bind() {
   el['terms-trigger'].addEventListener('click', () => {
     state.termsModalOpen = true
     renderChrome()
-    el['term-source'].focus()
   })
 
   // 手机底部操作条
@@ -2166,7 +2078,6 @@ function bind() {
   el['mobile-terms'].addEventListener('click', () => {
     state.termsModalOpen = true
     renderChrome()
-    el['term-source'].focus()
   })
 
   el['mobile-translate'].addEventListener('click', () => {
@@ -2289,48 +2200,40 @@ function bind() {
   el['terms-icon'].addEventListener('click', () => {
     state.termsModalOpen = true
     renderChrome()
-    el['term-source'].focus()
   })
 
-  el['terms-toggle'].addEventListener('click', () => {
+  el['terms'].addEventListener('toggle', () => {
     state.termsOpen = !state.termsOpen
     writeStore(KEYS.termsOpen, state.termsOpen ? '1' : '0')
     renderChrome()
   })
 
-  el['terms-x'].addEventListener('click', () => {
+  el['terms'].addEventListener('close-modal', () => {
     state.termsModalOpen = false
     renderChrome()
   })
 
-  el['terms-done'].addEventListener('click', () => {
-    state.termsModalOpen = false
+  el['terms'].addEventListener('add', (event) => {
+    addTermEntry(event.detail.source, event.detail.target)
+  })
+
+  el['terms'].addEventListener('remove', (event) => {
+    state.terms.splice(event.detail, 1)
+    persistTerms()
+    renderTerms()
     renderChrome()
   })
 
-  el['terms-modal'].addEventListener('mousedown', (event) => {
-    if (event.target !== el['terms-modal']) return
-    state.termsModalOpen = false
-    renderChrome()
-  })
-
-  el['terms-clear-modal'].addEventListener('click', () => {
-    // 和面板上的「清空」一致：先弹二次确认，不直接关掉术语弹窗
+  el['terms'].addEventListener('clear', () => {
     if (state.terms.length === 0) return
     state.confirmClear = true
     el['confirm-modal'].open = true
   })
 
-  // 宽度跨过 768 时，编辑区要在面板和弹窗之间搬回去/搬过来，
-  // 所以每次 resize 都要重渲染（否则宽屏面板会只剩一个空壳）
+  // 宽度跨过 768 时，编辑区要在面板和弹窗之间搬回去/搬过来
   window.addEventListener('resize', () => {
     if (!window.matchMedia('(max-width: 768px)').matches) state.termsModalOpen = false
     renderChrome()
-  })
-  el['term-clear'].addEventListener('click', () => {
-    if (state.terms.length === 0) return
-    state.confirmClear = true
-    el['confirm-modal'].open = true
   })
 
   el['confirm-modal'].addEventListener('wa-after-hide', () => {
@@ -2348,26 +2251,6 @@ function bind() {
     renderChrome()
     el['confirm-modal'].open = false
   })
-
-  el['term-source'].addEventListener('input', () => {
-    state.termSource = el['term-source'].value
-    renderChrome()
-  })
-  el['term-target'].addEventListener('input', () => {
-    state.termTarget = el['term-target'].value
-    renderChrome()
-  })
-  for (const input of [el['term-source'], el['term-target']]) {
-    input.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
-        event.preventDefault()
-        addTerm()
-      }
-    })
-  }
-  el['term-add'].addEventListener('click', addTerm)
-  el['term-add-icon'].addEventListener('click', addTerm)
-  el['term-add-foot'].addEventListener('click', addTerm)
 
   el['settings-sheet'].addEventListener('close', () => {
     state.settingsOpen = false

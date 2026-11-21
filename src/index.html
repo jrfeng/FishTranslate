@@ -46,24 +46,9 @@
         <script src="/boot-body.js"></script>
 
         <ft-settings-sheet id="settings-sheet"></ft-settings-sheet>
-  <div class="modal-overlay" id="terms-modal" hidden>
-    <div class="modal terms-modal" role="dialog" aria-modal="true" aria-label="术语">
-      <div class="modal-head">
-        <span class="modal-title">术语</span>
-        <span class="modal-count" id="terms-modal-count">0 条</span>
-        <button type="button" class="modal-close" id="terms-x" title="关闭" aria-label="关闭">
-          <svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6" /></svg>
-        </button>
-      </div>
-      <div class="terms-modal-body" id="terms-modal-body"></div>
-      <div class="modal-foot terms-modal-foot">
-        <wa-button id="terms-clear-modal" variant="warning" appearance="plain" size="s" disabled>清空全部</wa-button>
-        <span class="terms-foot-gap"></span>
-        <wa-button id="term-add-foot" variant="brand" size="s" disabled>添加</wa-button>
-        <wa-button id="terms-done" variant="brand" size="s">完成</wa-button>
-      </div>
-    </div>
-  </div>
+
+  <ft-terms id="terms"></ft-terms>
+  
 
 
         <main class="grid">
@@ -134,27 +119,7 @@
               <span class="terms-label" id="terms-label">术语 0 条</span>
               <span class="terms-go">管理 ›</span>
             </button>
-            <section class="card terms" id="terms-card">
-              <div class="card-head">
-                <span class="card-title">术语</span>
-                <span class="count" id="term-count">0</span>
-                <div class="card-meta">
-                  <wa-button id="term-clear" variant="warning" appearance="plain" size="s" disabled>清空</wa-button>
-                  <wa-button id="terms-toggle" appearance="plain" size="s">收起</wa-button>
-                </div>
-              </div>
-              <div class="terms-body" id="terms-body">
-                <div class="terms-add">
-                  <wa-input id="term-source" placeholder="术语" aria-label="术语" size="s" appearance="outlined" class="term-field" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></wa-input>
-                  <span class="term-join">翻译成</span>
-                  <span class="term-join-arrow" aria-hidden="true">→</span>
-                  <wa-input id="term-target" placeholder="译法" aria-label="译法" size="s" appearance="outlined" class="term-field" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></wa-input>
-                  <wa-button id="term-add" variant="brand" size="s" disabled>添加</wa-button>
-                  <button type="button" class="term-add-icon" id="term-add-icon" disabled aria-label="添加术语">+</button>
-                </div>
-                <div class="terms-list" id="terms-list"></div>
-              </div>
-            </section>
+            
           </section>
 
           <section class="col">

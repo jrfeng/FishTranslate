@@ -479,6 +479,11 @@ ft-toolbar {
   display: contents;
 }
 
+/* 术语组件同样不产生盒子，卡片直接参与 .col 布局 */
+ft-terms {
+  display: contents;
+}
+
 .head {
   display: flex;
   align-items: center;
