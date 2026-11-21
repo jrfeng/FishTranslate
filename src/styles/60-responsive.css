@@ -986,18 +986,21 @@ input,
     display: none;
   }
 
-  /* 文本区左上角的提示文案，和右上角的「预览」同一行 */
+  /* 文本区顶部的提示条：整条不透明，滚动时把文字挡在下面 */
   .verify-inline-hint {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     grid-row: 3;
     grid-column: 1;
     align-self: start;
-    justify-self: start;
-    height: 32px;
-    margin: 8px 0 0 20px;
-    z-index: 2;
+    justify-self: stretch;
+    height: 48px;
+    margin: 0 12px;
+    padding: 0 0 0 12px;
+    z-index: 3;
     pointer-events: none;
+    border-radius: 12px 12px 0 0;
+    background: var(--app-panel);
     color: var(--app-muted);
     font-size: var(--wa-font-size-xs);
   }
@@ -1014,7 +1017,7 @@ input,
     margin: 8px 20px 0 0;
     height: 32px;
     padding: 0 10px;
-    z-index: 2;
+    z-index: 4;
     font-size: 12.5px;
   }
 
