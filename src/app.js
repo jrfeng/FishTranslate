@@ -87,6 +87,7 @@ import './components/ft-terms.js'
 import './components/ft-source-editor.js'
 import './components/ft-size-badge.js'
 import './components/ft-verify-dialog.js'
+import './components/ft-output-card.js'
 
 const config = { apiKey: '', baseURL: DEFAULT_BASE_URL, model: DEFAULT_MODEL }
 
@@ -210,27 +211,12 @@ for (const id of [
   'confirm-ok',
   'terms-trigger',
   'terms-label',
-  'auto-copy',
   'immediate',
   'immediate-icon',
   'terms-icon',
   'terms-icon-label',
   'clear-icon',
-  'auto-copy-icon',
-  'view-icon',
-  'stale',
-  'view-toggle',
-  'copy',
-  'progress',
-  'output',
-  'usage-foot',
-  'usage-chip',
-  'usage-scrim',
-  'usage-chip-text',
-  'usage-pop',
-  'usage-pop-total',
-  'usage-rows',
-  'usage-pop-foot',
+  'output-card',
   'ctx-menu',
   'app-version',
 ]) {
@@ -361,34 +347,30 @@ function renderChrome() {  const loading = state.phase === 'loading'
   if (el['char-count-head'] !== null && el['char-count-head'] !== undefined) {
     el['char-count-head'].textContent = state.input.length + ' 字符'
   }
-  el.progress.hidden = !loading
   el['ocr-progress'].hidden = !ocrBusy
-  el.stale.hidden = !isStale()
 
-  el.copy.disabled = state.output.length === 0
-  el.copy.textContent =
-    state.copyState === 'ok' ? '已复制' : state.copyState === 'fail' ? '复制失败' : '复制'
-  el.copy.className = 'btn' + (state.copyState === 'ok' ? ' btn-ok' : state.copyState === 'fail' ? ' btn-fail' : '')
-
-  el['view-toggle'].disabled = state.output.length === 0
-  el['view-toggle'].textContent = state.view === 'preview' ? 'Markdown' : '预览'
+  const outputCard = el['output-card']
+  if (outputCard !== null && outputCard !== undefined) {
+    outputCard.phase = state.phase
+    outputCard.view = state.view
+    outputCard.output = state.output
+    outputCard.message = state.message
+    outputCard.copyState = state.copyState
+    outputCard.autoCopy = state.autoCopy
+    outputCard.busy = loading
+    outputCard.stale = isStale()
+    outputCard.usage = state.usage
+    outputCard.usageCount = state.usageCount
+    outputCard.usageTotal = state.usageTotal
+  }
   syncIconButtons()
   syncMoreUi()
-
-  el['auto-copy'].setAttribute('aria-checked', String(state.autoCopy))
-  el['auto-copy'].classList.toggle('on', state.autoCopy)
 
   el['immediate'].setAttribute('aria-checked', String(state.immediate))
   el['immediate'].classList.toggle('on', state.immediate)
   el['immediate-icon'].setAttribute('aria-checked', String(state.immediate))
   el['immediate-icon'].classList.toggle('on', state.immediate)
 
-  el['auto-copy-icon'].setAttribute('aria-checked', String(state.autoCopy))
-  el['auto-copy-icon'].classList.toggle('on', state.autoCopy)
-
-  el['view-icon'].disabled = state.output.length === 0
-  el['view-icon'].title = state.view === 'preview' ? '切换到 Markdown' : '切换到预览'
-  el['view-icon'].innerHTML = state.view === 'preview' ? VIEW_EYE_ICON : VIEW_CODE_ICON
 
   // 卡片图标按钮的 hover 提示
   el['terms-icon'].dataset.tip = '术语 ' + state.terms.length + ' 条'
@@ -399,8 +381,6 @@ function renderChrome() {  const loading = state.phase === 'loading'
   }
   el['immediate-icon'].dataset.tip = state.immediate ? '粘贴后翻译：开' : '粘贴后翻译：关'
   el['clear-icon'].dataset.tip = '清除'
-  el['auto-copy-icon'].dataset.tip = state.autoCopy ? '自动复制：开' : '自动复制：关'
-  el['view-icon'].dataset.tip = el['view-icon'].title
   el['image-zoom-icon'].dataset.tip = '校验识别结果'
   el['image-refresh'].dataset.tip = '重新识别'
 
@@ -436,7 +416,7 @@ function recordUsage(payload) {
   const usage = buildUsage(payload, { baseURL: config.baseURL, fallbackModel: config.model })
   if (usage === null) {
     state.usage = null
-    renderUsage()
+    renderChrome()
     return
   }
   state.usage = usage
@@ -444,143 +424,6 @@ function recordUsage(payload) {
   state.usageCount += 1
   renderUsage()
 }
-
-function renderUsage() {
-  const usage = state.usage
-  if (usage === null) {
-    el['usage-foot'].hidden = true
-    closeUsagePop()
-    return
-  }
-
-  el['usage-foot'].hidden = false
-  el['usage-chip-text'].textContent = usageChipText(usage)
-  el['usage-pop-total'].textContent = usageChipText(usage)
-
-  const frag = document.createDocumentFragment()
-  for (const [label, value] of usageRows(usage)) {
-    const row = document.createElement('div')
-    row.className = 'usage-row'
-    const key = document.createElement('span')
-    key.className = 'usage-k'
-    key.textContent = label
-    const val = document.createElement('span')
-    val.className = 'usage-v'
-    val.textContent = value
-    row.append(key, val)
-    frag.appendChild(row)
-  }
-  el['usage-rows'].replaceChildren(frag)
-  el['usage-pop-foot'].textContent = usageFootText(state.usageCount, state.usageTotal)
-}
-
-function isUsagePopOpen() {
-  return !el['usage-pop'].hidden
-}
-
-function openUsagePop() {
-  el['usage-pop'].hidden = false
-  el['usage-scrim'].hidden = false
-  el['usage-chip'].setAttribute('aria-expanded', 'true')
-}
-
-function closeUsagePop() {
-  el['usage-pop'].hidden = true
-  el['usage-scrim'].hidden = true
-  el['usage-chip'].setAttribute('aria-expanded', 'false')
-}
-
-function renderOutput() {
-  const key = state.phase + '|' + state.view + '|' + state.output + '|' + state.message
-  if (key === state.outputKey) return
-  state.outputKey = key
-  const out = el.output
-  out.classList.remove('is-empty')
-
-  if (state.phase === 'error') {
-    out.classList.remove('md-mode')
-    const box = document.createElement('div')
-    box.className = 'error'
-    const text = document.createElement('div')
-    text.textContent = state.message
-    box.appendChild(text)
-    out.replaceChildren(box)
-    return
-  }
-
-  if (state.output.length === 0) {
-    out.classList.remove('md-mode')
-    out.classList.add('is-empty')
-    const span = document.createElement('span')
-    span.className = 'placeholder'
-    span.textContent = state.phase === 'loading' ? '翻译中…' : '译文会显示在这里。'
-    out.replaceChildren(span)
-    return
-  }
-
-  if (state.view === 'source') {
-    out.classList.remove('md-mode')
-    const source = document.createElement('div')
-    source.className = 'md-source'
-    // 复用输入框的高亮器：输出是 HTML 片段，highlightSource 内部会转义
-    source.innerHTML = highlightSource(state.output)
-    out.replaceChildren(source)
-    return
-  }
-
-  out.classList.add('md-mode')
-  out.innerHTML = '<div class="md">' + renderMarkdown(state.output) + '</div>'
-}
-
-const TERM_SEPARATOR = ' 翻译成 '
-
-/** 把「原文 翻译成 译文」拆成两段，渲染时分开显示 */
-function splitTerm(term) {
-  const index = term.indexOf(TERM_SEPARATOR)
-  if (index < 0) return [term, '']
-  return [term.slice(0, index), term.slice(index + TERM_SEPARATOR.length)]
-}
-
-function renderTerms() {
-  const termsPanel = el['terms']
-  if (termsPanel !== null && termsPanel !== undefined) termsPanel.terms = state.terms
-}
-
-/** 给 wa-select 补一个下箭头（Web Awesome 自带的 wa-icon 没有注册，默认不可见） */
-function renderModels() {
-  syncToolbar()
-}
-
-function render() {
-  renderChrome()
-  renderOutput()
-}
-
-function renderAll() {
-  renderChrome()
-  renderOutput()
-  renderTerms()
-  renderModels()
-}
-
-/* ------------------------------------------------------------ 输入同步 */
-
-let highlightFrame = 0
-
-function syncHighlight() {
-  if (highlightFrame !== 0) return
-  highlightFrame = window.requestAnimationFrame(() => {
-    highlightFrame = 0
-    const editor = el['source-editor']
-    if (editor !== null && editor !== undefined) {
-      editor.highlightHtml = highlightSource(state.input)
-      return
-    }
-    el.hl.innerHTML = highlightSource(state.input)
-  })
-}
-
-/* ---------------------------------------------------------------- 复制 */
 
 async function copyText(text) {
   if (text.length === 0) return false
@@ -870,10 +713,6 @@ function modelStatusFailure(error) {
   return '模型列表读取失败：' + localizeError(error, '请检查 API Key 和接口地址。')
 }
 
-const VIEW_CODE_ICON =
-  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 7.2 4.4 12l4.2 4.8" /><path d="M15.4 7.2 19.6 12l-4.2 4.8" /></svg>'
-const VIEW_EYE_ICON =
-  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 12S5.8 6.4 12 6.4 21.4 12 21.4 12 18.2 17.6 12 17.6 2.6 12 2.6 12Z" /><circle cx="12" cy="12" r="2.6" /></svg>'
 
 /** 模型列表状态：idle / loading / ok / fail，显示在「接口地址」标签右边 */
 function setModelStatus(kind, text) {
@@ -1038,7 +877,6 @@ function buildContextItems(region, event) {
   }
 
   if (region === 'output') {
-    const out = el.output
     const selectedText = String(window.getSelection ? window.getSelection().toString() : '')
     items.push({
       label: '复制',
@@ -1285,25 +1123,15 @@ function bind() {
   window.addEventListener('blur', hideContextMenu)
   window.addEventListener('resize', hideContextMenu)
   document.addEventListener('scroll', hideContextMenu, true)
-  el['usage-scrim'].addEventListener('click', () => closeUsagePop())
-
-  el['usage-chip'].addEventListener('click', (event) => {
-    event.stopPropagation()
-    if (isUsagePopOpen()) {
-      closeUsagePop()
-    } else {
-      openUsagePop()
-    }
+  el['output-card'].addEventListener('copy', () => void copyText(state.output))
+  el['output-card'].addEventListener('toggle-view', () => {
+    state.view = state.view === 'preview' ? 'source' : 'preview'
+    renderChrome()
   })
-
-  document.addEventListener('click', (event) => {
-    if (!isUsagePopOpen()) return
-    if (el['usage-foot'].contains(event.target)) return
-    closeUsagePop()
-  })
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && isUsagePopOpen()) closeUsagePop()
+  el['output-card'].addEventListener('toggle-auto-copy', () => {
+    state.autoCopy = !state.autoCopy
+    writeStore(KEYS.autoCopy, state.autoCopy ? '1' : '0')
+    renderChrome()
   })
 
   el.source.addEventListener('input', () => {
@@ -1406,25 +1234,6 @@ function bind() {
   }
 
   el.clear.addEventListener('click', clearAll)
-
-  el.copy.addEventListener('click', () => void copyText(state.output))
-
-  function toggleView() {
-    state.view = state.view === 'preview' ? 'source' : 'preview'
-    render()
-  }
-
-  el['view-toggle'].addEventListener('click', toggleView)
-  el['view-icon'].addEventListener('click', toggleView)
-
-  function toggleAutoCopy() {
-    state.autoCopy = !state.autoCopy
-    writeStore(KEYS.autoCopy, state.autoCopy ? '1' : '0')
-    renderChrome()
-  }
-
-  el['auto-copy'].addEventListener('click', toggleAutoCopy)
-  el['auto-copy-icon'].addEventListener('click', toggleAutoCopy)
 
   function toggleImmediate() {
     state.immediate = !state.immediate
@@ -1727,8 +1536,6 @@ function bind() {
     el['terms-icon'],
     el['immediate-icon'],
     el['clear-icon'],
-    el['auto-copy-icon'],
-    el['view-icon'],
     el['image-refresh'],
     el['image-zoom-icon'],
   ]
@@ -2078,6 +1885,35 @@ function applyTheme(theme) {
 DARK_QUERY.addEventListener('change', () => {
   if (state.theme === 'auto') applyTheme('auto')
 })
+
+function render() {
+  renderChrome()
+}
+
+function renderAll() {
+  renderChrome()
+  renderTerms()
+}
+
+function renderTerms() {
+  const termsPanel = el['terms']
+  if (termsPanel !== null && termsPanel !== undefined) termsPanel.terms = state.terms
+}
+
+let highlightFrame = 0
+
+function syncHighlight() {
+  if (highlightFrame !== 0) return
+  highlightFrame = window.requestAnimationFrame(() => {
+    highlightFrame = 0
+    const editor = el['source-editor']
+    if (editor !== null && editor !== undefined) {
+      editor.highlightHtml = highlightSource(state.input)
+      return
+    }
+    el.hl.innerHTML = highlightSource(state.input)
+  })
+}
 
 function renderThemeSelect() {
   syncToolbar()

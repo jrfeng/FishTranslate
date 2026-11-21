@@ -57,6 +57,7 @@ src/
     ft-source-editor.js    原文编辑区（高亮层）          ✅
     ft-size-badge.js       调试角标（仅 debug 构建）     ✅
     ft-verify-dialog.js    校验识别结果弹窗              ✅
+    ft-output-card.js      译文卡片（预览 / 复制 / 用量）  ✅
     ft-settings-sheet.js
     ft-terms-sheet.js
     ft-toolbar.js
@@ -106,7 +107,7 @@ src/
 | 4b | 术语面板（卡片 / 弹窗共用列表） | 中 | ✅ |
 | 5a | 原文编辑区（高亮层 + 滚动同步） | 高 | ✅ |
 | 5b | 原文卡片其余部分（图片预览、卡片头按钮） | 高 | 待做 |
-| 5c | 译文面板（含用量浮层） | 中 | 待做 |
+| 5c | 译文面板（预览切换 / 复制 / 用量浮层） | 中 | ✅ |
 | 5d | 校验识别结果弹窗（缩放 / 预览 / 未保存确认） | 高 | ✅ |
 | 6 | 校验弹窗 + 状态栏 | 中 | 待做 |
 | 6 | 纯函数模块拆分（markdown / storage / constants / prompt） | 低 | ✅ |
