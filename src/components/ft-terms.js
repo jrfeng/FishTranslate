@@ -36,7 +36,7 @@ const TEMPLATE = `
         <span class="term-join">翻译成</span>
         <span class="term-join-arrow" aria-hidden="true">→</span>
         <wa-input data-ref="target" data-field="term-target" placeholder="译法" aria-label="译法" size="s" appearance="outlined" class="term-field" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></wa-input>
-        <wa-button variant="brand" size="s" data-action="submit" data-ref="add" disabled>添加</wa-button>
+        <wa-button id="term-add" variant="brand" size="s" data-action="submit" data-ref="add" disabled>添加</wa-button>
         <button type="button" class="term-add-icon" data-action="submit" data-ref="addIcon" disabled aria-label="添加术语">+</button>
       </div>
       <div class="terms-list" data-ref="list"></div>
@@ -56,7 +56,7 @@ const TEMPLATE = `
       <div class="modal-foot terms-modal-foot">
         <wa-button variant="warning" appearance="plain" size="s" data-action="clear" data-ref="modalClear" disabled>清空全部</wa-button>
         <span class="terms-foot-gap"></span>
-        <wa-button variant="brand" size="s" data-action="submit" data-ref="modalAdd" disabled>添加</wa-button>
+        <wa-button id="term-add-foot" variant="brand" size="s" data-action="submit" data-ref="modalAdd" disabled>添加</wa-button>
         <wa-button id="terms-done" variant="brand" size="s" data-action="close-modal" data-ref="done">完成</wa-button>
       </div>
     </div>

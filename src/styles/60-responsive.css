@@ -1157,6 +1157,8 @@ input,
 
   .terms-modal-foot {
     gap: 8px;
+    /* 左边对齐「术语」输入框，右边对齐「译法」输入框 */
+    justify-content: space-between;
   }
 
   .terms-modal-foot .terms-foot-gap {
@@ -1165,7 +1167,6 @@ input,
 
   #term-add-foot {
     display: inline-flex;
-    margin-left: auto;
   }
 
   #terms-done {
