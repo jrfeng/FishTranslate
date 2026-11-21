@@ -1139,9 +1139,16 @@ input,
 
 
 @media (max-width: 480px) {
+  /* 标题和字数按行盒垂直居中，别让「0 字符」贴着基线往下掉 */
   .card-count-head {
-    display: inline;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
     margin-left: 6px;
+  }
+
+  .card-title {
+    line-height: 1;
   }
 
   /* 底部那行只在手机上让位给标题旁 */
