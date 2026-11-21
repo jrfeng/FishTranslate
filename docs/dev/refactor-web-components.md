@@ -36,6 +36,8 @@ src/
   app.js              逐步缩小 → 最终只做「创建 store、mount <ft-app>」
   lib/
     element.js        FtElement 基类（template / refs / emit）      ✅ 已建
+    markdown.js       Markdown 渲染 + 输入高亮（纯函数）            ✅
+    storage.js        localStorage 读写封装                         ✅
     store.js          极简响应式 store（下一步）
     tauri.js          invoke 封装（从 app.js 抽出）
   components/
@@ -100,6 +102,7 @@ src/
 | 5b | 原文卡片其余部分（图片预览、卡片头按钮） | 高 | 待做 |
 | 5c | 译文面板（含用量浮层） | 中 | 待做 |
 | 6 | 校验弹窗 + 状态栏 | 中 | 待做 |
+| 6 | 纯函数模块拆分（markdown / storage） | 低 | ✅ |
 | 7 | 删掉 `app.js` 的旧代码，收尾 CSS | 中 | 待做 |
 
 阶段 5 最危险：高亮层、字符数、粘贴、图片缩放都有历史 bug 修复，迁移时必须配套回归清单。
