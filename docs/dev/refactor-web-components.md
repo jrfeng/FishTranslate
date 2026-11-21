@@ -122,7 +122,7 @@ src/
 | 5d | 校验识别结果弹窗（缩放 / 预览 / 未保存确认） | 高 | ✅ |
 | 6 | 校验弹窗 + 状态栏 | 中 | 待做 |
 | 6 | 纯函数模块拆分（markdown / storage / constants / prompt） | 低 | ✅ |
-| 7 | 删掉 `app.js` 的旧代码，收尾 CSS | 中 | 进行中（CSS 已拆分、bind 已按区域拆分） |
+| 7 | 收尾：CSS 拆分、bind 拆分、静态检查、文档 | 中 | ✅ |
 
 阶段 5 最危险：高亮层、字符数、粘贴、图片缩放都有历史 bug 修复，迁移时必须配套回归清单。
 
@@ -156,11 +156,19 @@ npm run check
 2. `index.html` 用到的 `<ft-*>` 标签是否都有组件注册
 3. `app.js` 引用的 `el['...']` 是否在页面或组件里存在
 
+## 怎么验证一次改动
+
+1. `npm run check`：静态检查未定义函数、组件注册、id 引用
+2. `node scripts/build.mjs`：构建 `dist/`
+3. 用测试版窗口手动过一遍：工具栏 / 原文卡片 / 译文卡片 / 术语 / 设置 / 校验弹窗
+4. 窄屏（≤768、≤480）各看一次布局
+
 ## 当前分支状态
 
 ```
 分支：refactor-web-component（本地，未推送、未提交）
 基线：dev @ 00afeac（v0.8.2）
+状态：结构重构完成，待验收合并
 新增：src/lib/element.js、src/components/ft-balance-dialog.js
 改动：src/app.js、src/index.html
 ```
