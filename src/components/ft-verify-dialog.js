@@ -30,7 +30,7 @@ const TEMPLATE = `
       </div>
       <div class="verify-panel">
         <div class="verify-head">
-          <span class="verify-head-hint">识别文本 · 改完点「确认」</span>
+          <span class="verify-head-hint" data-ref="hint">识别文本 · 改完点「确认」</span>
           <span class="verify-head-title">校验识别结果</span>
           <button type="button" class="verify-btn" id="verify-view" data-ref="view" title="切换预览 / 编辑">预览</button>
           <button type="button" class="verify-btn verify-btn-primary" id="verify-save" data-ref="save">确认</button>
@@ -43,8 +43,6 @@ const TEMPLATE = `
           <textarea id="verify-editor" data-ref="editor" spellcheck="false" placeholder="这里显示识别出的文字，可直接修改。"></textarea>
         </div>
         <div class="verify-preview" id="verify-preview" data-ref="preview" hidden></div>
-        <span class="verify-inline-hint">识别文本 · 改完点「保存」</span>
-        <button type="button" class="verify-btn verify-inline-view" data-ref="viewInline" title="切换预览 / 编辑">预览</button>
         <div class="verify-actions" data-ref="actions">
           <button type="button" class="verify-btn verify-abandon" data-ref="abandon">放弃</button>
           <button type="button" class="verify-btn verify-btn-primary" data-ref="saveBottom">保存</button>
@@ -135,13 +133,11 @@ class FtVerifyDialog extends FtElement {
       this.ref('expand').textContent = full ? '⤢ 收起' : '⤢ 放大'
     })
 
-    const toggleView = () => {
+    this.ref('view').addEventListener('click', () => {
       this.#view = this.#view === 'preview' ? 'edit' : 'preview'
       this.renderView()
       if (this.#view === 'edit') this.ref('editor').focus()
-    }
-    this.ref('view').addEventListener('click', toggleView)
-    this.ref('viewInline').addEventListener('click', toggleView)
+    })
 
     this.ref('keep').addEventListener('click', () => {
       this.ref('confirm').hidden = true
@@ -253,9 +249,10 @@ class FtVerifyDialog extends FtElement {
     const previewing = this.#view === 'preview'
     this.ref('editWrap').hidden = previewing
     this.ref('preview').hidden = !previewing
-    const label = previewing ? '编辑' : '预览'
-    this.ref('view').textContent = label
-    this.ref('viewInline').textContent = label
+    this.ref('view').textContent = previewing ? '编辑' : '预览'
+    // 手机底部按钮叫「保存」，宽屏头部按钮叫「确认」，提示文案跟着改
+    const compact = window.matchMedia('(max-width: 480px)').matches
+    this.ref('hint').textContent = compact ? '识别文本 · 改完点「保存」' : '识别文本 · 改完点「确认」'
     if (previewing) {
       this.ref('preview').innerHTML =
         '<div class="md">' + renderMarkdown(this.ref('editor').value) + '</div>'

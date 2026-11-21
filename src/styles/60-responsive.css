@@ -920,7 +920,7 @@ input,
   .verify-dialog {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: 52px auto minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr);
     width: 100%;
     height: 100%;
     padding: 0;
@@ -930,100 +930,27 @@ input,
     background: var(--app-bg);
   }
 
-  /* 让头部 / 图片 / 编辑区直接参与外层网格 */
+  /* 面板本身是卡片：头部（提示 + 预览 + 关闭）就在卡片顶端，和 >480 一致 */
   .verify-panel {
-    display: contents;
-  }
-
-  .verify-head {
-    grid-row: 1;
+    grid-row: 2;
     grid-column: 1;
-    height: 52px;
+    margin: 0 12px 10px;
     min-height: 0;
-    padding: 0 8px 0 6px;
-    border-bottom: 1px solid var(--app-border);
-    background: var(--app-top);
-    order: initial;
-  }
-
-  .verify-head-hint {
-    display: none;
-  }
-
-  .verify-head-title {
-    display: inline;
-    flex: 1 1 auto;
-    padding-left: 2px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--app-text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .verify-head-close {
-    position: static;
-    order: -1;
-    width: 40px;
-    height: 40px;
-    flex: 0 0 auto;
-    border: 0;
-    background: transparent;
-  }
-
-  .verify-head-close svg {
-    width: 14px;
-    height: 14px;
   }
 
   #verify-save {
     display: none;
   }
 
-  /* 「预览 / 编辑」挪到文本区，头部只留关闭和标题 */
-  #verify-view {
-    display: none;
-  }
-
-  /* 文本区顶部的提示条：整条不透明，滚动时把文字挡在下面 */
-  .verify-inline-hint {
-    display: flex;
-    align-items: center;
-    grid-row: 3;
-    grid-column: 1;
-    align-self: start;
-    justify-self: stretch;
-    height: 48px;
-    margin: 0 12px;
-    padding: 0 0 0 12px;
-    z-index: 3;
-    pointer-events: none;
-    border-radius: 12px 12px 0 0;
-    background: var(--app-panel);
-    color: var(--app-muted);
-    font-size: var(--wa-font-size-xs);
-  }
-
-  .verify-inline-view {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    grid-row: 3;
-    grid-column: 1;
-    align-self: start;
-    justify-self: end;
-    /* 卡片左右各有 12px 外边距，再内缩 8px，和卡片圆角对齐 */
-    margin: 8px 20px 0 0;
-    height: 32px;
-    padding: 0 10px;
-    z-index: 4;
-    font-size: 12.5px;
+  /* 基础样式里关闭按钮是相对弹窗绝对定位的，这里收回面板头部 */
+  .verify-head-close {
+    position: static;
+    flex: 0 0 auto;
   }
 
   /* 图片：顶部参考条 */
   .verify-stage {
-    grid-row: 2;
+    grid-row: 1;
     height: 132px;
     margin: 10px 12px;
     padding: 0;
@@ -1101,33 +1028,6 @@ input,
     bottom: 16px;
   }
 
-  /* 编辑区 */
-  .verify-edit-wrap,
-  .verify-preview {
-    grid-row: 3;
-    /* 显式占第 1 列，否则会和行内「预览」按钮各占一列，把布局撑成两栏 */
-    grid-column: 1;
-    margin: 0 12px;
-    /* 基础样式里有 width: 100%，在带 margin 的网格项上会撑出边界 */
-    width: auto;
-    max-width: 100%;
-    padding: 0;
-    border: var(--app-line) solid var(--app-border);
-    border-radius: 12px;
-    background: var(--app-panel);
-    font-size: 15px;
-  }
-
-  /* 顶部 48px 给文本区里的「预览 / 编辑」按钮留位 */
-  .verify-preview {
-    padding: 48px 12px 12px;
-  }
-
-  #verify-editor,
-  .verify-hl {
-    padding: 48px 12px 12px;
-  }
-
   /* 未保存确认：浮在底部操作条上方，不参与网格排版，避免挤压编辑区 */
   .verify-confirm {
     position: fixed;
@@ -1164,8 +1064,6 @@ input,
   /* 底部操作条 */
   .verify-actions {
     display: flex;
-    grid-row: 4;
-    grid-column: 1;
     gap: 8px;
     padding: 10px 12px 14px;
     border-top: 1px solid var(--app-border);
