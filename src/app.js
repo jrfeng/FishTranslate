@@ -18,6 +18,21 @@ import {
   highlightSource,
 } from './lib/markdown.js'
 import { readStore, writeStore, removeStore, readJsonStore, writeJsonStore } from './lib/storage.js'
+import {
+  MAX_TERMS,
+  COPIED_MS,
+  BALANCE_WARN,
+  BALANCE_DANGER,
+  BALANCE_MIN_PROGRESS_MS,
+  DEFAULT_BASE_URL,
+  DEFAULT_MODEL,
+  KEYS,
+  LANGS,
+  DEFAULT_SOURCE_LANG,
+  DEFAULT_TARGET_LANG,
+  THEMES,
+} from './lib/constants.js'
+import { taskBrief, composeSource } from './lib/prompt.js'
 
 /* ------------------------------------------------------------ 常量与状态 */
 
@@ -58,83 +73,7 @@ import './components/ft-toolbar.js'
 import './components/ft-settings-sheet.js'
 import './components/ft-terms.js'
 import './components/ft-source-editor.js'
-
-const MAX_TERMS = 50
-const COPIED_MS = 1600
-
-/** 余额提醒阈值：低于该数值时变色（橙色 < 3，红色 < 2） */
-const BALANCE_WARN = 3
-const BALANCE_DANGER = 2
-/** 余额手动刷新的进度条最短显示时长 */
-const BALANCE_MIN_PROGRESS_MS = 1000
-
-const DEFAULT_BASE_URL = 'https://api.deepseek.com'
-const DEFAULT_MODEL = 'deepseek-chat'
-
-const TASK_STRUCTURE = [
-  '【本次任务（优先于其他格式要求）】',
-  '先把原文整理成 Markdown，再翻译：',
-  '- 并列、分步、逐条的内容用有序或无序列表；',
-  '- 有明显分节的内容用标题；',
-  '- 代码、命令、文件路径、接口路径、变量名用行内代码（反引号）包裹；',
-  '- 纯叙述性段落保持为普通段落。',
-  '只做结构整理，不许增删或改写任何信息。',
-]
-
-/** 按目标语言生成用户消息里的任务说明 */
-function taskBrief(target) {
-  return [
-    ...TASK_STRUCTURE,
-    '',
-    `然后把整理出的 Markdown 翻译成${target}：Markdown 标记和代码原样保留，代码块里的代码不翻译。`,
-    `只输出${target}译文本身，不要输出原文，不要任何解释或前言。`,
-  ].join('\n')
-}
-
-const KEYS = {
-  settings: 'fish-app.settings',
-  terms: 'fish-app.terms',
-  autoCopy: 'fish-app.auto-copy',
-  immediate: 'fish-app.immediate',
-  termsOpen: 'fish-app.terms-open',
-  view: 'fish-app.view',
-  theme: 'fish-app.theme',
-  sourceLang: 'fish-app.source-lang',
-  targetLang: 'fish-app.target-lang',
-  models: 'fish-app.models',
-  balance: 'fish-app.balance',
-}
-
-
-/** 可选的源/目标语言：只收 DeepSeek 表现稳定的语种，中英排最前 */
-const LANGS = [
-  '简体中文',
-  '英语',
-  '日语',
-  '韩语',
-  '法语',
-  '德语',
-  '西班牙语',
-  '俄语',
-  '葡萄牙语',
-  '意大利语',
-  '阿拉伯语',
-  '越南语',
-  '泰国语',
-  '印尼语',
-]
-
-const DEFAULT_SOURCE_LANG = '英语'
-const DEFAULT_TARGET_LANG = '简体中文'
-
-/** 内置主题：auto 跟随系统 / b 浅色 / a 深色 / c 风格化 */
-const THEMES = [
-  { id: 'auto', name: '跟随系统' },
-  { id: 'b', name: '浅色' },
-  { id: 'a', name: '深色' },
-  { id: 'c', name: '风格化' },
-  { id: 'd', name: '蓝色大肥鱼' },
-]
+import './components/ft-size-badge.js'
 
 const config = { apiKey: '', baseURL: DEFAULT_BASE_URL, model: DEFAULT_MODEL }
 
@@ -370,15 +309,6 @@ function saveSettings() {
 }
 
 /* -------------------------------------------------------------- 组合请求 */
-
-function composeSource(text, terms, target) {
-  const blocks = [taskBrief(target)]
-  if (terms.length > 0) {
-    blocks.push('【术语提示（翻译时必须优先遵守）】\n' + terms.map((term) => '- ' + term).join('\n'))
-  }
-  blocks.push('【待翻译原文】\n' + text)
-  return blocks.join('\n\n')
-}
 
 function termsSignature() {
   return state.terms.join('\u0000')
@@ -1373,44 +1303,6 @@ function handleContextMenuKeydown(event) {
 }
 
 /* ------------------------------------------------------------ 宽度调试角标 */
-
-function renderSizeBadge() {
-  const badge = document.getElementById('size-badge')
-  if (badge === null) return
-  const width = Math.round(window.innerWidth)
-  const height = Math.round(window.innerHeight)
-  badge.textContent = width + ' × ' + height
-}
-
-/**
- * 宽度调试角标：Ctrl+Shift+D 开关（默认关闭）
- * 只在 FISH_DEBUG=1 的构建里存在，release 包会被 esbuild 整段剔除
- */
-function initSizeBadge() {
-  if (__FISH_DEBUG__ !== true) return
-
-  // debug 构建默认就显示，按 Ctrl+Shift+D 可以关掉
-  const stored = readStore('fish-app.debug-size')
-  const enabled = stored === null ? true : stored === '1'
-
-  const badge = document.createElement('div')
-  badge.id = 'size-badge'
-  badge.hidden = !enabled
-  badge.setAttribute('aria-hidden', 'true')
-  document.body.appendChild(badge)
-  renderSizeBadge()
-
-  window.addEventListener('resize', renderSizeBadge)
-
-  document.addEventListener('keydown', (event) => {
-    if (event.ctrlKey !== true || event.shiftKey !== true) return
-    if (String(event.key).toLowerCase() !== 'd') return
-    event.preventDefault()
-    badge.hidden = !badge.hidden
-    writeStore('fish-app.debug-size', badge.hidden ? '0' : '1')
-    renderSizeBadge()
-  })
-}
 
 /** Ctrl/Cmd+Shift+V 的「粘贴为纯文本」：下一次 paste 不要转 Markdown */
 let plainPastePending = false
@@ -2671,7 +2563,6 @@ renderThemeSelect()
 renderLangSelects()
 el.source.value = state.input
 bind()
-initSizeBadge()
 renderAll()
 syncHighlight()
 if (config.apiKey.length > 0) {

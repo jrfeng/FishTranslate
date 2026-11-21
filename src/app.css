@@ -489,6 +489,11 @@ ft-source-editor {
   display: contents;
 }
 
+/* 调试角标组件不产生盒子 */
+ft-size-badge {
+  display: contents;
+}
+
 .head {
   display: flex;
   align-items: center;
