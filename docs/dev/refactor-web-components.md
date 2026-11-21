@@ -132,6 +132,20 @@ src/
 | 全局 CSS 与新标签选择器冲突 | 保留原有 class 名，CSS 只替换 id 选择器 |
 | `wa-*` 组件在自定义元素内初始化顺序 | 继续沿用 `main.js` 里的 `customElements.whenDefined` 等待 |
 
+## 静态体检
+
+每次拆完代码跑一次：
+
+```bash
+npm run check
+```
+
+它会在没有浏览器的情况下检查三件事：
+
+1. `app.js` 里调用了但没定义的函数（上次 `renderModels` 被误删就是靠这个发现的）
+2. `index.html` 用到的 `<ft-*>` 标签是否都有组件注册
+3. `app.js` 引用的 `el['...']` 是否在页面或组件里存在
+
 ## 当前分支状态
 
 ```
