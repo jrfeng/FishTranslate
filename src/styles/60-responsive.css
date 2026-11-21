@@ -1139,8 +1139,10 @@ input,
 
 
 @media (max-width: 480px) {
-  /* 标题和字数按行盒垂直居中，别让「0 字符」贴着基线往下掉 */
+  /* 标题和字数按行盒垂直居中；实测字数的字形比标题高 1px，补一个像素的位移 */
   .card-count-head {
+    position: relative;
+    top: 1px;
     display: inline-flex;
     align-items: center;
     line-height: 1;
