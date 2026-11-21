@@ -937,6 +937,7 @@ input,
 
   .verify-head {
     grid-row: 1;
+    grid-column: 1;
     height: 52px;
     min-height: 0;
     padding: 0 8px 0 6px;
@@ -980,11 +981,24 @@ input,
     display: none;
   }
 
+  /* 「预览 / 编辑」挪到文本区，头部只留关闭和标题 */
   #verify-view {
-    order: 3;
-    height: 34px;
-    padding: 0 12px;
-    flex: 0 0 auto;
+    display: none;
+  }
+
+  .verify-inline-view {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    grid-row: 3;
+    grid-column: 1;
+    align-self: start;
+    justify-self: end;
+    /* 卡片左右各有 12px 外边距，再内缩 8px，和卡片圆角对齐 */
+    margin: 8px 20px 0 0;
+    height: 32px;
+    padding: 0 10px;
+    z-index: 2;
     font-size: 12.5px;
   }
 
@@ -1069,21 +1083,27 @@ input,
   .verify-edit-wrap,
   .verify-preview {
     grid-row: 3;
+    /* 显式占第 1 列，否则会和行内「预览」按钮各占一列，把布局撑成两栏 */
+    grid-column: 1;
     margin: 0 12px;
     /* 基础样式里有 width: 100%，在带 margin 的网格项上会撑出边界 */
     width: auto;
     max-width: 100%;
-    padding: 12px;
+    padding: 0;
     border: var(--app-line) solid var(--app-border);
     border-radius: 12px;
     background: var(--app-panel);
     font-size: 15px;
   }
 
-  /* 卡片式外壳已经给了内边距，里面的文本区不再重复 */
+  /* 顶部 48px 给文本区里的「预览 / 编辑」按钮留位 */
+  .verify-preview {
+    padding: 48px 12px 12px;
+  }
+
   #verify-editor,
   .verify-hl {
-    padding: 0;
+    padding: 48px 12px 12px;
   }
 
   /* 未保存确认：浮在底部操作条上方，不参与网格排版，避免挤压编辑区 */
@@ -1123,6 +1143,7 @@ input,
   .verify-actions {
     display: flex;
     grid-row: 4;
+    grid-column: 1;
     gap: 8px;
     padding: 10px 12px 14px;
     border-top: 1px solid var(--app-border);
